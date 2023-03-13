@@ -12,9 +12,11 @@ Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomand
 Para jogar WordleX86, siga as instruções abaixo:
 
 1. Clone o repositório para sua máquina local com o seguinte comando:
+
 `git clone https://github.com/nathaliafab/WordleX86`
 
 2. Acesse a pasta raiz do projeto:
+
 `cd WordleX86`
 
 3. Compile e rode o código com o comando `make`.
