@@ -1,3 +1,10 @@
+<div align="center">
+<img src="https://github.com/nathaliafab/WordleX86/blob/main/screenshots/menu_title.png">
+</div>
+
+
+---
+
 # WordleX86
 Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomando como base o código feito para o meu [projeto bootloader](https://github.com/saranicoly/bootloader-asm) da cadeira Infraestrutura de Software (IF677) no CIn-UFPE.
 
@@ -9,7 +16,15 @@ Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomand
 - [ ] Expandir para Quordle
 
 ## Como jogar
-Para jogar WordleX86, siga as instruções abaixo:
+### Pré-requisitos
+Antes de começar a jogar, certifique-se de ter instalado os seguintes programas:
+
+- **NASM:** é um montador e desmontador usado para converter código assembly em código de máquina. 
+
+- **QEMU:** é um emulador de processador que permite que você simule um PC dentro de outro PC.
+
+### Instalação e Execução
+Para jogar, siga os passos abaixo:
 
 1. Clone o repositório para sua máquina local com o seguinte comando:
 
@@ -33,4 +48,4 @@ O jogo apresentará uma palavra aleatória, e o jogador terá que tentar adivinh
 Contribuições são sempre bem-vindas! Se você encontrar um bug ou tiver uma ideia para uma melhoria no jogo, por favor, abra uma issue ou envie um pull request.
 
 ## Licença
-Este projeto está sob a licença MIT. Consulte o arquivo `LICENSE` para obter mais informações.
+Este projeto está sob a licença MIT. Consulte o arquivo para obter mais informações.
