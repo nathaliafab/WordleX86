@@ -45,19 +45,42 @@ jmp 0x0000:start
 	call printf_color
 %endmacro
 
+%macro drawSquare 4
+    mov ax, %1      ;Cor
+    mov ah, 0x0c
+    xor bx, bx
+    mov cx, %2      ;Coordenada X
+    mov dx, %3      ;Coordenada Y
+    mov si, %4      ;Tamanho
+    mov di, si
+    add di, dx      ;di = tamanho + y
+    add si, cx      ;si = tamanho + x
+    draw_sq:
+      mov cx, %2
+    draw_row:
+      int 10h
+      inc cx
+      cmp cx, si
+      jne draw_row
+      inc dx
+      cmp dx, di
+      jne draw_sq
+  ret
+%endmacro
+
 start:
   call clean_regs
 	call initVideo
-	setTitle 0, 0, GAME_START_STR
-  call waitEnter
-  call clearScreen
+  drawSquare lightGrayColor, 0, 0, 20
+	;setTitle 0, 0, GAME_START_STR
+  ;call waitEnter
+  ;call clearScreen
   ;call initGame
   ;call gameLoop
   ;call endGame
   jmp $
 
 ;========================= FUNÇÕES =========================
-
 ;------------------------- LIMPA REGISTRADORES
 clean_regs:
     xor ax, ax    ;limpando ax
