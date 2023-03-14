@@ -1,17 +1,26 @@
 <div align="center">
 <img src="https://github.com/nathaliafab/WordleX86/blob/main/screenshots/menu_title.png">
+
+  (inimiga do design?)
 </div>
 
 
 ---
 
 # WordleX86
-Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomando como base o código feito para o meu [projeto bootloader](https://github.com/saranicoly/bootloader-asm) da cadeira Infraestrutura de Software (IF677) no CIn-UFPE.
+Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomando como base a ideia para o meu [projeto bootloader](https://github.com/saranicoly/bootloader-asm) da cadeira Infraestrutura de Software (IF677) no CIn-UFPE.
 
 ### To do...
-- [ ] Criar um menu inicial (background, título, iniciar jogo, sair)
-- [ ] Atribuir as cores de cada letra (verde para letras certas, amarelo para letras certas na posição errada, vermelho para letras erradas)
+- [ ] Telas do jogo
+  - [x] Menu inicial
+  - [ ] Errou a palavra
+  - [ ] Acertou a palavra
+- [ ] Atribuir as cores de cada letra (verde = certas, amarelo = certas na posição errada, vermelho = erradas, cinza = tentativas)  
+  - [x] Desenhar quadrado na tela na cor desejada
+  - [ ] Desenhar quadrado específico no local correto
+  - [ ] Colocar as letras nos respectivos quadrados
 - [ ] Criar/Importar um dataset de palavras para o jogo
+  - [ ] Escolher aleatoriamente uma dessas palavras para cada rodada
 - [ ] Expandir para Dordle
 - [ ] Expandir para Quordle
 
@@ -37,8 +46,8 @@ Para jogar, siga os passos abaixo:
 3. Compile e rode o código com o comando `make`.
 
 ### Instruções
-Basta pressionar `Enter` para iniciar o jogo.
-O jogo apresentará uma palavra aleatória, e o jogador terá que tentar adivinhar a palavra em até seis tentativas. Para isso, o jogador deve digitar uma palavra de cinco letras e pressionar `Enter`. O jogo irá informar quais letras da palavra escolhida estão corretas e quais estão incorretas. O jogador deve continuar tentando até acertar a palavra completa ou atingir o limite de tentativas.
+Basta pressionar **Enter** para iniciar o jogo.
+O jogo apresentará uma palavra aleatória, e o jogador terá que tentar adivinhar a palavra em até cinco tentativas. Para isso, o jogador deve digitar uma palavra de cinco letras e pressionar **Enter**. O jogo irá informar quais letras da palavra escolhida estão corretas e quais estão incorretas. O jogador deve continuar tentando até acertar a palavra completa ou atingir o limite de tentativas.
 
 - Após cada jogada, o jogo irá informar quantas tentativas restantes o jogador possui.
 - Caso o jogador acerte a palavra antes do limite de tentativas, o jogo irá parabenizá-lo e perguntar se ele deseja jogar novamente.
