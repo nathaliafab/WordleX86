@@ -74,22 +74,32 @@ draw_square:
       jne draw_sq
   ret
 
-%macro drawTry 3
-    mov ax, %1      ;Cor
+%macro drawFiveSquares 7
+    mov ax, %1      ;Cor (args 1-5 são as cores)
     mov ah, 0x0c
-    mov cx, %2      ;Coordenada X
-    mov dx, %3      ;Coordenada Y
+    mov cx, %6      ;Coordenada X (arg 6)
+    mov dx, %7      ;Coordenada Y (arg 7)
     
-    call draw_try
+    call draw_next_sq
+    mov ax, %2      ;Cor (args 1-5 são as cores)
+    mov ah, 0x0c
+    call draw_next_sq
+    mov ax, %3      ;Cor (args 1-5 são as cores)
+    mov ah, 0x0c
+    call draw_next_sq
+    mov ax, %4      ;Cor (args 1-5 são as cores)
+    mov ah, 0x0c
+    call draw_next_sq
+    mov ax, %5      ;Cor (args 1-5 são as cores)
+    mov ah, 0x0c
+    call draw_next_sq
 %endmacro
 
-draw_try:
+draw_next_sq:
   drawSquare ax, cx, dx, 20
   add bx, 25
   sub dx, 20    ; restaura o valor de dx
   mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
-  cmp cx, 225   ; verifica se já desenhou todos os quadrados (125(limite) + 100(coordenada x inicial))
-  jne draw_try
   ret
 
 ;========================= GAME =========================
@@ -251,11 +261,11 @@ clearScreen:
 
 ;------------------------- INICIALIZA O JOGO
 initGame:
-  drawTry lightGrayColor, 100, 50
-  drawTry lightGrayColor, 100, 80
-  drawTry lightGrayColor, 100, 110
-  drawTry lightGrayColor, 100, 140
-  drawTry lightGrayColor, 100, 170
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 50
+  drawFiveSquares lightGrayColor, greenColor, lightGrayColor, greenColor, lightGrayColor, 100, 80
+  drawFiveSquares lightGrayColor, lightGrayColor, yellowColor, lightGrayColor, lightGrayColor, 100, 110
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 140
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 170
 
   call gameLoop
   ret
