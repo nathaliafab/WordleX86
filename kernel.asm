@@ -48,15 +48,22 @@ jmp 0x0000:start
 %macro drawSquare 4
     mov ax, %1      ;Cor
     mov ah, 0x0c
-    xor bx, bx
     mov cx, %2      ;Coordenada X
     mov dx, %3      ;Coordenada Y
     mov si, %4      ;Tamanho
     mov di, si
     add di, dx      ;di = tamanho + y
     add si, cx      ;si = tamanho + x
+    
+    call draw_square
+%endmacro
+
+draw_square:
+    xor bx, bx
+    mov bx, cx ; guarda o valor inicial da coordenada x em bx
+    
     draw_sq:
-      mov cx, %2
+      mov cx, bx
     draw_row:
       int 10h
       inc cx
@@ -66,16 +73,43 @@ jmp 0x0000:start
       cmp dx, di
       jne draw_sq
   ret
+
+%macro drawFiveSquares 7
+    mov ax, %1      ;Cor (args 1-5 são as cores)
+    mov ah, 0x0c
+    mov cx, %6      ;Coordenada X (arg 6)
+    mov dx, %7      ;Coordenada Y (arg 7)
+    
+    call draw_next_sq
+    mov ax, %2      ;Cor (args 1-5 são as cores)
+    mov ah, 0x0c
+    call draw_next_sq
+    mov ax, %3      ;Cor (args 1-5 são as cores)
+    mov ah, 0x0c
+    call draw_next_sq
+    mov ax, %4      ;Cor (args 1-5 são as cores)
+    mov ah, 0x0c
+    call draw_next_sq
+    mov ax, %5      ;Cor (args 1-5 são as cores)
+    mov ah, 0x0c
+    call draw_next_sq
 %endmacro
 
+draw_next_sq:
+  drawSquare ax, cx, dx, 20
+  add bx, 25
+  sub dx, 20    ; restaura o valor de dx
+  mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
+  ret
+
+;========================= GAME =========================
 start:
   call clean_regs
 	call initVideo
-  drawSquare lightGrayColor, 0, 0, 20
-	;setTitle 0, 0, GAME_START_STR
-  ;call waitEnter
-  ;call clearScreen
-  ;call initGame
+	setTitle 0, 0, GAME_START_STR
+  call waitEnter
+  call clearScreen
+  call initGame
   ;call gameLoop
   ;call endGame
   jmp $
@@ -226,10 +260,27 @@ clearScreen:
   ret
 
 ;------------------------- INICIALIZA O JOGO
-;initGame:
+initGame:
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 50
+  drawFiveSquares lightGrayColor, greenColor, lightGrayColor, greenColor, lightGrayColor, 100, 80
+  drawFiveSquares lightGrayColor, lightGrayColor, yellowColor, lightGrayColor, lightGrayColor, 100, 110
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 140
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 170
+
+  call gameLoop
+  ret
 
 ;------------------------- JOGO RODANDO
-;gameLoop:
+gameLoop:
+  ;tentativa do player ;)
+  ;mudar cor dos quadrados de acordo com a tentativa
+  ;checar se a tentativa é igual a palavra secreta
+  ;se for, mensagem de parabéns
+  ;se não for, checar se o player perdeu
+  ;se perdeu, mensagem de game over
+  ;se não perdeu, faz outra tentativa na próxima linha
+
+  ret
 
 ;------------------------- FINALIZA O JOGO
 ;endGame:
