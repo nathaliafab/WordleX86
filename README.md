@@ -17,7 +17,7 @@ Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomand
   - [ ] Acertou a palavra
 - [ ] Atribuir as cores de cada letra (verde = certas, amarelo = certas na posição errada, vermelho = erradas, cinza = tentativas)  
   - [x] Desenhar quadrado na tela na cor desejada
-  - [ ] Desenhar quadrado específico no local correto
+  - [x] Desenhar quadrado específico no local correto
   - [ ] Colocar as letras nos respectivos quadrados
 - [ ] Criar/Importar um dataset de palavras para o jogo
   - [ ] Escolher aleatoriamente uma dessas palavras para cada rodada
