@@ -256,10 +256,21 @@ initGame:
   drawTry lightGrayColor, 100, 110
   drawTry lightGrayColor, 100, 140
   drawTry lightGrayColor, 100, 170
+
+  call gameLoop
   ret
 
 ;------------------------- JOGO RODANDO
-;gameLoop:
+gameLoop:
+  ;tentativa do player ;)
+  ;mudar cor dos quadrados de acordo com a tentativa
+  ;checar se a tentativa é igual a palavra secreta
+  ;se for, mensagem de parabéns
+  ;se não for, checar se o player perdeu
+  ;se perdeu, mensagem de game over
+  ;se não perdeu, faz outra tentativa na próxima linha
+
+  ret
 
 ;------------------------- FINALIZA O JOGO
 ;endGame:
