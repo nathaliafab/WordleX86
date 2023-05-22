@@ -48,15 +48,22 @@ jmp 0x0000:start
 %macro drawSquare 4
     mov ax, %1      ;Cor
     mov ah, 0x0c
-    xor bx, bx
     mov cx, %2      ;Coordenada X
     mov dx, %3      ;Coordenada Y
     mov si, %4      ;Tamanho
     mov di, si
     add di, dx      ;di = tamanho + y
     add si, cx      ;si = tamanho + x
+    
+    call draw_square
+%endmacro
+
+draw_square:
+    xor bx, bx
+    mov bx, cx ; guarda o valor inicial da coordenada x em bx
+    
     draw_sq:
-      mov cx, %2
+      mov cx, bx
     draw_row:
       int 10h
       inc cx
@@ -66,16 +73,33 @@ jmp 0x0000:start
       cmp dx, di
       jne draw_sq
   ret
+
+%macro drawTry 3
+    mov ax, %1      ;Cor
+    mov ah, 0x0c
+    mov cx, %2      ;Coordenada X
+    mov dx, %3      ;Coordenada Y
+    
+    call draw_try
 %endmacro
 
+draw_try:
+  drawSquare ax, cx, dx, 20
+  add bx, 25
+  sub dx, 20    ; restaura o valor de dx
+  mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
+  cmp cx, 225   ; verifica se já desenhou todos os quadrados (125(limite) + 100(coordenada x inicial))
+  jne draw_try
+  ret
+
+;========================= GAME =========================
 start:
   call clean_regs
 	call initVideo
-  drawSquare lightGrayColor, 0, 0, 20
-	;setTitle 0, 0, GAME_START_STR
-  ;call waitEnter
-  ;call clearScreen
-  ;call initGame
+	setTitle 0, 0, GAME_START_STR
+  call waitEnter
+  call clearScreen
+  call initGame
   ;call gameLoop
   ;call endGame
   jmp $
@@ -226,7 +250,13 @@ clearScreen:
   ret
 
 ;------------------------- INICIALIZA O JOGO
-;initGame:
+initGame:
+  drawTry lightGrayColor, 100, 50
+  drawTry lightGrayColor, 100, 80
+  drawTry lightGrayColor, 100, 110
+  drawTry lightGrayColor, 100, 140
+  drawTry lightGrayColor, 100, 170
+  ret
 
 ;------------------------- JOGO RODANDO
 ;gameLoop:
