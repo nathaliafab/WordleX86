@@ -1,28 +1,28 @@
 <div align="center">
-<img src="https://github.com/nathaliafab/WordleX86/blob/main/screenshots/menu_title.png">
-
-  (inimiga do design?)
+  <img src="https://github.com/nathaliafab/WordleX86/blob/main/screenshots/menu_title.png">
+  <p>(inimiga do design?)</p>
 </div>
-
 
 ---
 
-# WordleX86
 Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomando como base a ideia para o meu [projeto bootloader](https://github.com/saranicoly/bootloader-asm) da cadeira Infraestrutura de Software (IF677) no CIn-UFPE.
 
-### To do...
-- [ ] Telas do jogo
+### 🔨 To do...
+- [ ] **Telas do jogo**
   - [x] Menu inicial
   - [ ] Errou a palavra
   - [ ] Acertou a palavra
-- [ ] Atribuir as cores de cada letra (verde = certas, amarelo = certas na posição errada, vermelho = erradas, cinza = tentativas)  
+- [ ] **Quadrados**
   - [x] Desenhar quadrado na tela na cor desejada
   - [x] Desenhar quadrado específico no local correto
   - [ ] Colocar as letras nos respectivos quadrados
-- [ ] Criar/Importar um dataset de palavras para o jogo
-  - [ ] Escolher aleatoriamente uma dessas palavras para cada rodada
-- [ ] Expandir para Dordle
-- [ ] Expandir para Quordle
+- [ ] **Palavras**
+  - [ ] Pegar tentativa do usuário
+  - [ ] Checar se a tentativa é correta ou não
+  - [ ] Criar/Importar um dataset de palavras para o jogo
+    - [ ] Escolher aleatoriamente uma dessas palavras para cada rodada
+  - [ ] Expandir para Dordle
+  - [ ] Expandir para Quordle
 
 ## Como jogar
 ### Pré-requisitos
@@ -32,7 +32,7 @@ Antes de começar a jogar, certifique-se de ter instalado os seguintes programas
 
 - **QEMU:** é um emulador de processador que permite que você simule um PC dentro de outro PC.
 
-### Instalação e Execução
+### 💻 Instalação e Execução
 Para jogar, siga os passos abaixo:
 
 1. Clone o repositório para sua máquina local com o seguinte comando:
@@ -45,7 +45,7 @@ Para jogar, siga os passos abaixo:
 
 3. Compile e rode o código com o comando `make`.
 
-### Instruções
+### 📜 Instruções
 Basta pressionar **Enter** para iniciar o jogo.
 O jogo apresentará uma palavra aleatória, e o jogador terá que tentar adivinhar a palavra em até cinco tentativas. Para isso, o jogador deve digitar uma palavra de cinco letras e pressionar **Enter**. O jogo irá informar quais letras da palavra escolhida estão corretas e quais estão incorretas. O jogador deve continuar tentando até acertar a palavra completa ou atingir o limite de tentativas.
 
@@ -53,7 +53,7 @@ O jogo apresentará uma palavra aleatória, e o jogador terá que tentar adivinh
 - Caso o jogador acerte a palavra antes do limite de tentativas, o jogo irá parabenizá-lo e perguntar se ele deseja jogar novamente.
 - Caso contrário, o jogo informará a palavra correta e perguntará se o jogador deseja jogar novamente.
 
-## Contribuições
+## 🦝 Contribuições
 Contribuições são sempre bem-vindas! Se você encontrar um bug ou tiver uma ideia para uma melhoria no jogo, por favor, abra uma issue ou envie um pull request.
 
 ## Licença
