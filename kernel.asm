@@ -59,6 +59,7 @@ section .bss
 section .text
   global __start
 
+;========================= MACROS =========================
 %macro setText 4
 	mov ah, 02h  ; Setando o cursor
 	mov bh, 0    ; Página 0
@@ -80,60 +81,54 @@ section .text
 	call printf_color_title
 %endmacro
 
-%macro simplePrintf 2
-	mov si, %1
-	mov bx, %2
-	call printf_color
-%endmacro
-
 %macro drawSquare 4
-    mov ax, %1      ;Cor
-    mov ah, 0x0c
-    mov cx, %2      ;Coordenada X
-    mov dx, %3      ;Coordenada Y
-    mov si, %4      ;Tamanho
-    mov di, si
-    add di, dx      ;di = tamanho + y
-    add si, cx      ;si = tamanho + x
-    
-    call draw_square
+  mov ax, %1      ;Cor
+  mov ah, 0x0c
+  mov cx, %2      ;Coordenada X
+  mov dx, %3      ;Coordenada Y
+  mov si, %4      ;Tamanho
+  mov di, si
+  add di, dx      ;di = tamanho + y
+  add si, cx      ;si = tamanho + x
+  
+  call draw_square
 %endmacro
 
 draw_square:
-    xor bx, bx
-    mov bx, cx ; guarda o valor inicial da coordenada x em bx
-    
-    draw_sq:
-      mov cx, bx
-    draw_row:
-      int 10h
-      inc cx
-      cmp cx, si
-      jne draw_row
-      inc dx
-      cmp dx, di
-      jne draw_sq
+  xor bx, bx
+  mov bx, cx ; guarda o valor inicial da coordenada x em bx
+  
+  draw_sq:
+    mov cx, bx
+  draw_row:
+    int 10h
+    inc cx
+    cmp cx, si
+    jne draw_row
+    inc dx
+    cmp dx, di
+    jne draw_sq
   ret
 
 %macro drawFiveSquares 7
-    mov ax, %1      ;Cor (args 1-5 são as cores)
-    mov ah, 0x0c
-    mov cx, %6      ;Coordenada X (arg 6)
-    mov dx, %7      ;Coordenada Y (arg 7)
-    
-    call draw_next_sq
-    mov ax, %2      ;Cor (args 1-5 são as cores)
-    mov ah, 0x0c
-    call draw_next_sq
-    mov ax, %3      ;Cor (args 1-5 são as cores)
-    mov ah, 0x0c
-    call draw_next_sq
-    mov ax, %4      ;Cor (args 1-5 são as cores)
-    mov ah, 0x0c
-    call draw_next_sq
-    mov ax, %5      ;Cor (args 1-5 são as cores)
-    mov ah, 0x0c
-    call draw_next_sq
+  mov ax, %1      ;Cor (args 1-5 são as cores)
+  mov ah, 0x0c
+  mov cx, %6      ;Coordenada X (arg 6)
+  mov dx, %7      ;Coordenada Y (arg 7)
+  
+  call draw_next_sq
+  mov ax, %2      ;Cor (args 1-5 são as cores)
+  mov ah, 0x0c
+  call draw_next_sq
+  mov ax, %3      ;Cor (args 1-5 são as cores)
+  mov ah, 0x0c
+  call draw_next_sq
+  mov ax, %4      ;Cor (args 1-5 são as cores)
+  mov ah, 0x0c
+  call draw_next_sq
+  mov ax, %5      ;Cor (args 1-5 são as cores)
+  mov ah, 0x0c
+  call draw_next_sq
 %endmacro
 
 draw_next_sq:
@@ -143,26 +138,14 @@ draw_next_sq:
   mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
   ret
 
-;========================= GAME =========================
-__start:
-  call clean_regs
-	call initVideo
-  setTitle 0, 0, GAME_START_STR
-  call waitEnter
-  call clearScreen
-  call initGame
-  call gameLoop
-  ;call endGame
-  jmp $
-
 ;========================= FUNÇÕES =========================
 ;------------------------- LIMPA REGISTRADORES
 clean_regs:
-    xor ax, ax    ;limpando ax
-    mov bx, ax    ;limpando bx
-    mov cx, ax    ;limpando cx
-    mov ds, ax    ;limpando ds
-    mov es, ax    ;limpando es
+  xor ax, ax    ;limpando ax
+  mov bx, ax    ;limpando bx
+  mov cx, ax    ;limpando cx
+  mov ds, ax    ;limpando ds
+  mov es, ax    ;limpando es
   ret
 
 ;------------------------- INICIALIZA MODO DE VÍDEO
@@ -170,7 +153,7 @@ initVideo:
 	mov ah, 00h
 	mov al, 13h
 	int 10h
-ret
+  ret
 
 ;------------------------- PRINTA STRING COM COR ESPECIFICADA EM BX
 printf_color:
@@ -182,7 +165,7 @@ printf_color:
 		int 10h
 		jmp loop_print_string
 	end_print_string:
-ret
+  ret
 
 ;------------------------- PRINTA TITULO COM CORES PREDEFINIDAS
 printf_color_title:
@@ -278,7 +261,7 @@ printf_color_title:
       int 10h
       jmp loop_print_title
 	end_print_title:
-ret
+  ret
 
 ;------------------------- ESPERA INPUT ENTER DO USUÁRIO
 waitEnter:
@@ -302,14 +285,13 @@ clearScreen:
 
 ;-------------------------- RANDOMIZA A PALAVRA SECRETA
 RANDGEN:
-   MOV AH, 00h  ; interrupts to get system time        
-   INT 1AH      ; Read system clock counter -> CX:DX now hold number of clock ticks since midnight      
-
-   mov  ax, dx
-   xor  dx, dx
-   mov  cx, 5    
-   div  cx       ; here dx contains the remainder of the division - from 0 to 4
-RET
+  MOV AH, 00h  ; interrupts to get system time        
+  INT 1AH      ; Read system clock counter -> CX:DX now hold number of clock ticks since midnight      
+  mov  ax, dx
+  xor  dx, dx
+  mov  cx, 5    
+  div  cx      ; here dx contains the remainder of the division - from 0 to 4
+  RET
 
 ;-------------------------- SETA A PALAVRA SECRETA (podre mas é o que tá tendo)
 setSecretWord:
@@ -354,7 +336,19 @@ setSecretWord:
 
     ;call clearScreen
     ;setText 0, 0, secretWord, lightBlueColor
-ret
+  ret
+
+;========================= GAME =========================
+__start:
+  call clean_regs
+  call initVideo
+  setTitle 0, 0, GAME_START_STR
+  call waitEnter
+  call clearScreen
+  call initGame
+  call gameLoop
+  ;call endGame
+  jmp $
 
 ;------------------------- INICIALIZA O JOGO
 initGame:
