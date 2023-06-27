@@ -19,7 +19,7 @@ Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomand
 - [ ] **Palavras**
   - [ ] Pegar tentativa do usuário
   - [ ] Checar se a tentativa é correta ou não
-  - [ ] Criar/Importar um dataset de palavras para o jogo
+  - [x] Criar/Importar um dataset de palavras para o jogo
     - [ ] Escolher aleatoriamente uma dessas palavras para cada rodada
   - [ ] Expandir para Dordle
   - [ ] Expandir para Quordle
