@@ -1,5 +1,5 @@
 ORG 0x7E00
-jmp 0x0000:start
+jmp 0x0000:__start
 
 %define blackColor 0
 %define blueColor 1
@@ -17,6 +17,47 @@ jmp 0x0000:start
 %define lightMagentaColor 13
 %define yellowColor 14
 %define whiteColor 15
+
+;========================= DADOS =========================
+section .data
+  GAME_START_STR: db '  ',0ah,0dh
+                  db   ' g                 s          t        ',0ah,0dh
+                  db   '           o                         o ',0ah,0dh
+                  db   '      >  >  >  WORDLE x86  <  <  <     ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '     d                             a   ',0ah,0dh
+                  db   '                e                      ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '  s                s      e          . ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '          (press enter to start)       ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '     m              b       l     y    ',0ah,0dh
+                  db   '       _____                           ',0ah,0dh
+                  db   '      /    /|_ _____________________   ',0ah,0dh
+                  db   '     /    // /|                    /|  ',0ah,0dh
+                  db   '    (====|/ //          _QP_      / |  ',0ah,0dh
+                  db   '     (=====|/          (  ` )    / .|  ',0ah,0dh
+                  db   '    (====|/             \__/    / /||  ',0ah,0dh
+                  db   '   /___________________________/ / ||  ',0ah,0dh
+                  db   '   |  _______________________  ||  ||  ',0ah,0dh
+                  db   '   | ||                      | ||      ',0ah,0dh
+                  db   '   | ||     by               | ||      ',0ah,0dh
+                  db   '   | |         @nathaliafab  | |       ',0ah,0dh
+                  db   '$' ; fim da string
+
+  word0: db 'apple', '$'
+  word1: db 'beach', '$'
+  word2: db 'candy', '$'
+  word3: db 'daisy', '$'
+  word4: db 'eagle', '$'
+  ;"fairy", "grape", "honey", "image", "jelly", "kings", "lemon", "magic", "noble", "oasis", "peace", "quilt", "river", "sunny", "teeth", "unity", "vivid", "waste", "xerox", "yacht"
+
+section .bss
+  secretWord: resb 6 ; Aloca espaço para a palavra secreta
+
+section .text
+  global __start
 
 %macro setText 4
 	mov ah, 02h  ; Setando o cursor
@@ -103,14 +144,14 @@ draw_next_sq:
   ret
 
 ;========================= GAME =========================
-start:
+__start:
   call clean_regs
 	call initVideo
-	setTitle 0, 0, GAME_START_STR
+  setTitle 0, 0, GAME_START_STR
   call waitEnter
   call clearScreen
   call initGame
-  ;call gameLoop
+  call gameLoop
   ;call endGame
   jmp $
 
@@ -259,19 +300,74 @@ clearScreen:
   int 10h
   ret
 
+;-------------------------- RANDOMIZA A PALAVRA SECRETA
+RANDGEN:
+   MOV AH, 00h  ; interrupts to get system time        
+   INT 1AH      ; Read system clock counter -> CX:DX now hold number of clock ticks since midnight      
+
+   mov  ax, dx
+   xor  dx, dx
+   mov  cx, 5    
+   div  cx       ; here dx contains the remainder of the division - from 0 to 4
+RET
+
+;-------------------------- SETA A PALAVRA SECRETA (podre mas é o que tá tendo)
+setSecretWord:
+  call RANDGEN
+
+  cmp dl, 0
+  je .setWord0
+  cmp dl, 1
+  je .setWord1
+  cmp dl, 2
+  je .setWord2
+  cmp dl, 3
+  je .setWord3
+  cmp dl, 4
+  je .setWord4
+
+  .setWord0:
+    mov esi, word0
+    jmp .endSetWord
+
+  .setWord1:
+    mov esi, word1
+    jmp .endSetWord
+
+  .setWord2:
+    mov esi, word2
+    jmp .endSetWord
+  
+  .setWord3:
+    mov esi, word3
+    jmp .endSetWord
+
+  .setWord4:
+    mov esi, word4
+    jmp .endSetWord
+
+  .endSetWord:
+    mov edi, secretWord
+    mov ecx, 6
+    cld
+    rep movsb ; Copia os caracteres da palavra selecionada para secretWord
+
+    ;call clearScreen
+    ;setText 0, 0, secretWord, lightBlueColor
+ret
+
 ;------------------------- INICIALIZA O JOGO
 initGame:
   drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 50
-  drawFiveSquares lightGrayColor, greenColor, lightGrayColor, greenColor, lightGrayColor, 100, 80
-  drawFiveSquares lightGrayColor, lightGrayColor, yellowColor, lightGrayColor, lightGrayColor, 100, 110
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 80
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 110
   drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 140
   drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 170
-
-  call gameLoop
   ret
 
 ;------------------------- JOGO RODANDO
 gameLoop:
+  call setSecretWord
   ;tentativa do player ;)
   ;mudar cor dos quadrados de acordo com a tentativa
   ;checar se a tentativa é igual a palavra secreta
@@ -284,31 +380,3 @@ gameLoop:
 
 ;------------------------- FINALIZA O JOGO
 ;endGame:
-
-;========================= DADOS =========================
-data:
-  GAME_START_STR  db '  ',0ah,0dh
-                  db   ' g                 s          t        ',0ah,0dh
-                  db   '           o                         o ',0ah,0dh
-                  db   '      >  >  >  WORDLE x86  <  <  <     ',0ah,0dh
-                  db   '                                       ',0ah,0dh
-                  db   '     d                             a   ',0ah,0dh
-                  db   '                e                      ',0ah,0dh
-                  db   '                                       ',0ah,0dh
-                  db   '  s                s      e          . ',0ah,0dh
-                  db   '                                       ',0ah,0dh
-                  db   '          (press enter to start)       ',0ah,0dh
-                  db   '                                       ',0ah,0dh
-                  db   '     m              b       l     y    ',0ah,0dh
-                  db   '       _____                           ',0ah,0dh
-                  db   '      /    /|_ _____________________   ',0ah,0dh
-                  db   '     /    // /|                    /|  ',0ah,0dh
-                  db   '    (====|/ //          _QP_      / |  ',0ah,0dh
-                  db   '     (=====|/          (  ` )    / .|  ',0ah,0dh
-                  db   '    (====|/             \__/    / /||  ',0ah,0dh
-                  db   '   /___________________________/ / ||  ',0ah,0dh
-                  db   '   |  _______________________  ||  ||  ',0ah,0dh
-                  db   '   | ||                      | ||      ',0ah,0dh
-                  db   '   | ||     by               | ||      ',0ah,0dh
-                  db   '   | |         @nathaliafab  | |       ',0ah,0dh
-                  db   '$' ; fim da string
