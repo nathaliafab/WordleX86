@@ -53,7 +53,7 @@ section .data
   word4: db 'eagle', '$'
   ;"fairy", "grape", "honey", "image", "jelly", "kings", "lemon", "magic", "noble", "oasis", "peace", "quilt", "river", "sunny", "teeth", "unity", "vivid", "waste", "xerox", "yacht"
 
-  numTries: dd 0
+  numTries: db 0
 
 section .bss
   secretWord: resb 6 ; Aloca espaço para a palavra secreta
@@ -378,66 +378,170 @@ playerTry:
   printText 1, 0, currentTry, lightCyanColor
   ret
 
+;-------------------------- DESENHA QUADRADO VERDE NO LOCAL INDICADO
+rightChar:
+  mov ax, lightGreenColor
+  mov ah, 0x0c
+  drawSquare ax, cx, dx, 20
+  add bx, 25
+  sub dx, 20    ; restaura o valor de dx
+  mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
+  ret
+
+;-------------------------- DESENHA QUADRADO VERMELHO NO LOCAL INDICADO
+wrongChar:
+  mov ax, lightRedColor
+  mov ah, 0x0c
+  drawSquare ax, cx, dx, 20
+  add bx, 25
+  sub dx, 20    ; restaura o valor de dx
+  mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
+  ret
+
+;-------------------------- CHECA LETRAS DA TENATIVA ATUAL COM A PALAVRA SECRETA
+checkWord:
+  mov esi, currentTry
+  mov edi, secretWord
+  
+  .char0:
+    xor eax, eax
+    lodsb            ; Carrega o caractere da tentativa atual em al e incrementa esi
+    cmp al, byte [edi]  ; Compara com o caractere da palavra secreta
+    je .callRightChar1
+    jne .callWrongChar1
+
+    .callRightChar1:
+      call rightChar       ; Se for igual, pula para rightChar
+      jmp .char1
+
+    .callWrongChar1:
+      call wrongChar       ; Se for diferente, pula para wrongChar
+      jmp .char1
+
+  .char1:
+    mov esi, currentTry + 1
+    mov edi, secretWord + 1
+    xor eax, eax
+    lodsb
+    cmp al, byte [edi]
+    je .callRightChar2
+    jne .callWrongChar2
+
+    .callRightChar2:
+      call rightChar
+      jmp .char2
+        
+    .callWrongChar2:
+      call wrongChar
+      jmp .char2
+
+  .char2:
+    mov esi, currentTry + 2
+    mov edi, secretWord + 2
+    xor eax, eax
+    lodsb
+    cmp al, byte [edi]
+    je .callRightChar3
+    jne .callWrongChar3
+
+    .callRightChar3:
+      call rightChar
+      jmp .char3
+        
+    .callWrongChar3:
+      call wrongChar
+      jmp .char3
+
+  .char3:
+    mov esi, currentTry + 3
+    mov edi, secretWord + 3
+    xor eax, eax
+    lodsb
+    cmp al, byte [edi]
+    je .callRightChar4
+    jne .callWrongChar4
+
+    .callRightChar4:
+      call rightChar
+      jmp .char4
+
+    .callWrongChar4:
+      call wrongChar
+      jmp .char4
+
+  .char4:
+    mov esi, currentTry + 4
+    mov edi, secretWord + 4
+    xor eax, eax
+    lodsb
+    cmp al, byte [edi]
+    je .callRightChar5
+    jne .callWrongChar5
+
+    .callRightChar5:
+      call rightChar
+      ret
+
+    .callWrongChar5:
+      call wrongChar
+      ret
+
+;-------------------------- INCREMENTA O NÚMERO DE TENTATIVAS
+incTries:
+  mov al, [numTries]
+  inc al
+  mov [numTries], al
+  ret
+
 ;-------------------------- ATUALIZA A TELA COM A TENTATIVA ATUAL
 updateGame:
-  mov ecx, numTries
-  
-  cmp ecx, 0
+  cmp byte [numTries], 0
   je .firstLine
 
-  ;cmp ecx, 1
-  ;je .secondLine
+  cmp byte [numTries], 1
+  je .secondLine
 
-  ;cmp ecx, 2
-  ;je .thirdLine
+  cmp byte [numTries], 2
+  je .thirdLine
 
-  ;cmp ecx, 3
-  ;je .fourthLine
+  cmp byte [numTries], 3
+  je .fourthLine
 
-  ;cmp ecx, 4
-  ;je .fifthLine
+  cmp byte [numTries], 4
+  je .fifthLine
 
-  .firstLine: ; ALTERAR LÓGICA: drawSquare MEXE COM VALORES SI E DI
-    inc ecx
-    mov [numTries], ecx
+  .firstLine:
     mov cx, 100 ; Posição x inicial da primeira linha
     mov dx, 50  ; Posição y inicial da primeira linha
-    mov esi, currentTry
-    mov edi, secretWord
-    jmp .checkWord
+    call checkWord
+    jmp .end
 
-    .checkWord:
-      xor eax, eax
-      lodsb            ; Carrega o caractere da tentativa atual em al e incrementa esi
-      cmp al, '$'      ; Verifica se chegou ao final da string
-      je .end
-      cmp al, byte [di]  ; Compara com o caractere da palavra secreta
-      je .rightChar       ; Se for igual, pula para rightChar
-      jmp .wrongChar      ; Se for diferente, pula para wrongChar
-      .nextChar:
-        stosb          ; Guarda o al no endereço de edi e incrementa edi
-        jmp .checkWord   ; Repete o processo até que todos os caracteres sejam comparados
+  .secondLine:
+    mov cx, 100 ; Posição x inicial da segunda linha
+    mov dx, 80  ; Posição y inicial da segunda linha
+    call checkWord
+    jmp .end
 
-    .rightChar:
-      mov ax, lightGreenColor
-      mov ah, 0x0c
-      drawSquare ax, cx, dx, 20
-      add bx, 25
-      sub dx, 20    ; restaura o valor de dx
-      mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
-      jmp .nextChar
+  .thirdLine:
+    mov cx, 100 ; Posição x inicial da terceira linha
+    mov dx, 110 ; Posição y inicial da terceira linha
+    call checkWord
+    jmp .end
+  
+  .fourthLine:
+    mov cx, 100 ; Posição x inicial da quarta linha
+    mov dx, 140 ; Posição y inicial da quarta linha
+    call checkWord
+    jmp .end
 
-    .wrongChar:
-      mov ax, lightRedColor
-      mov ah, 0x0c
-      drawSquare ax, cx, dx, 20
-      add bx, 25
-      sub dx, 20    ; restaura o valor de dx
-      mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
-      jmp .nextChar
+  .fifthLine:
+    mov cx, 100 ; Posição x inicial da quinta linha
+    mov dx, 170 ; Posição y inicial da quinta linha
+    call checkWord
+    jmp .end
 
-    .end:
-      ret
+  .end:
+    ret
 
 ;========================= GAME =========================
 __start:
@@ -453,6 +557,7 @@ __start:
 
 ;------------------------- INICIALIZA O JOGO
 initGame:
+  call setSecretWord
   drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 50
   drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 80
   drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 110
@@ -462,9 +567,12 @@ initGame:
 
 ;------------------------- JOGO RODANDO
 gameLoop:
-  call setSecretWord
   call playerTry
   call updateGame
+  call incTries
+  mov ecx, [numTries]
+  cmp ecx, 5
+  jne gameLoop
   ;tentativa do player ;)
   ;mudar cor dos quadrados de acordo com a tentativa
   ;checar se a tentativa é igual a palavra secreta
