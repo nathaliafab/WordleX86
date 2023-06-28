@@ -53,8 +53,11 @@ section .data
   word4: db 'eagle', '$'
   ;"fairy", "grape", "honey", "image", "jelly", "kings", "lemon", "magic", "noble", "oasis", "peace", "quilt", "river", "sunny", "teeth", "unity", "vivid", "waste", "xerox", "yacht"
 
+  numTries: dd 0
+
 section .bss
   secretWord: resb 6 ; Aloca espaço para a palavra secreta
+  currentTry: resb 6 ; Aloca espaço para a tentativa atual
 
 section .text
   global __start
@@ -284,18 +287,18 @@ clearScreen:
   ret
 
 ;-------------------------- RANDOMIZA A PALAVRA SECRETA
-RANDGEN:
-  MOV AH, 00h  ; interrupts to get system time        
-  INT 1AH      ; Read system clock counter -> CX:DX now hold number of clock ticks since midnight      
+randgen:
+  mov ah, 00h  ; interrupts to get system time        
+  int 1ah      ; Read system clock counter -> CX:DX now hold number of clock ticks since midnight      
   mov  ax, dx
   xor  dx, dx
   mov  cx, 5    
   div  cx      ; here dx contains the remainder of the division - from 0 to 4
-  RET
+  ret
 
 ;-------------------------- SETA A PALAVRA SECRETA (podre mas é o que tá tendo)
 setSecretWord:
-  call RANDGEN
+  call randgen
 
   cmp dl, 0
   je .setWord0
@@ -333,9 +336,57 @@ setSecretWord:
     mov ecx, 6
     cld
     rep movsb ; Copia os caracteres da palavra selecionada para secretWord
+  ret
 
-    ;call clearScreen
-    ;setText 0, 0, secretWord, lightBlueColor
+;-------------------------- JOGADOR TENTA ADIVINHAR A PALAVRA SECRETA
+playerTry:
+  xor eax, eax
+  mov ecx, 5          ; Tamanho da palavra secreta
+  mov edi, currentTry ; Endereço da string da tentativa atual
+
+  getChar:
+    mov ah, 0x00
+    int 16h
+    stosb
+    mov ah, 0eh ; Printa o caractere lido no cantinho
+		int 10h
+    loop getChar
+  
+  mov al, '$' ; Finaliza a string
+  stosb
+  call waitEnter  ; Espera o usuário apertar enter
+  ret
+
+;-------------------------- ATUALIZA A TELA COM A TENTATIVA ATUAL
+updateGame:
+  mov ecx, numTries
+  
+  cmp ecx, 0
+  je .firstLine
+
+  ;cmp ecx, 1
+  ;je .secondLine
+
+  ;cmp ecx, 2
+  ;je .thirdLine
+
+  ;cmp ecx, 3
+  ;je .fourthLine
+
+  ;cmp ecx, 4
+  ;je .fifthLine
+
+  .firstLine:
+    inc ecx
+    mov [numTries], ecx
+    mov bx, 100 ; Posição x inicial da primeira linha
+    mov cx, 50  ; Posição y inicial da primeira linha
+    mov esi, currentTry
+    mov edi, secretWord
+    lodsb               ; Carrega o primeiro caractere da tentativa atual em al
+    cmp al, byte [edi]  ; Compara com o primeiro caractere da palavra secreta
+    ;je .rightChar       ; Se for igual, pula para rightChar
+    ;jmp .wrongChar      ; Se for diferente, pula para wrongChar
   ret
 
 ;========================= GAME =========================
@@ -362,6 +413,8 @@ initGame:
 ;------------------------- JOGO RODANDO
 gameLoop:
   call setSecretWord
+  call playerTry
+  call updateGame
   ;tentativa do player ;)
   ;mudar cor dos quadrados de acordo com a tentativa
   ;checar se a tentativa é igual a palavra secreta
