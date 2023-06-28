@@ -63,7 +63,17 @@ section .text
   global __start
 
 ;========================= MACROS =========================
-%macro setText 4
+%macro printCharAtCoord 3
+  mov ah, 02h  ; Setando o cursor
+  mov bh, 0    ; Página 0
+  mov dh, %1   ; Linha (x)
+  mov dl, %2   ; Coluna (y)
+  int 10h
+  mov al, %3   ; Caractere
+  call printChar
+%endmacro
+
+%macro printText 4
 	mov ah, 02h  ; Setando o cursor
 	mov bh, 0    ; Página 0
 	mov dh, %1   ; Linha (x)
@@ -71,17 +81,17 @@ section .text
 	int 10h
 	mov si, %3
 	mov bx, %4
-	call printf_color
+	call printColorText
 %endmacro
 
-%macro setTitle 3
+%macro printGameTitle 3
 	mov ah, 02h  ; Setando o cursor
 	mov bh, 0    ; Página 0
 	mov dh, %1   ; Linha (x)
 	mov dl, %2   ; Coluna (y)
 	int 10h
 	mov si, %3   ; String
-	call printf_color_title
+	call printColorTitle
 %endmacro
 
 %macro drawSquare 4
@@ -143,7 +153,7 @@ draw_next_sq:
 
 ;========================= FUNÇÕES =========================
 ;------------------------- LIMPA REGISTRADORES
-clean_regs:
+cleanRegs:
   xor ax, ax    ;limpando ax
   mov bx, ax    ;limpando bx
   mov cx, ax    ;limpando cx
@@ -158,20 +168,25 @@ initVideo:
 	int 10h
   ret
 
+;------------------------- PRINTA CARACTERE EM AL
+printChar:
+  mov ah, 0eh
+  int 10h
+  ret
+
 ;------------------------- PRINTA STRING COM COR ESPECIFICADA EM BX
-printf_color:
+printColorText:
 	loop_print_string:
 		lodsb
 		cmp al, '$'
 		je end_print_string
-		mov ah,0eh
-		int 10h
+		call printChar
 		jmp loop_print_string
 	end_print_string:
   ret
 
 ;------------------------- PRINTA TITULO COM CORES PREDEFINIDAS
-printf_color_title:
+printColorTitle:
   change_color:
     cmp al, 0x3d ;=
     je go_lightgreen
@@ -231,38 +246,43 @@ printf_color_title:
 
     go_magenta:
       mov bx, magentaColor
-      jmp print_char
+      call printChar
+      jmp loop_print_title
     go_lightgreen:
       mov bx, lightGreenColor
-      jmp print_char
+      call printChar
+      jmp loop_print_title
     go_lightred:
       mov bx, lightRedColor
-      jmp print_char
+      call printChar
+      jmp loop_print_title
     go_green:
       mov bx, greenColor
-      jmp print_char
+      call printChar
+      jmp loop_print_title
     go_yellow:
       mov bx, yellowColor
-      jmp print_char
+      call printChar
+      jmp loop_print_title
     go_red:
       mov bx, redColor
-      jmp print_char
+      call printChar
+      jmp loop_print_title
     go_lightblue:
       mov bx, lightBlueColor
-      jmp print_char
+      call printChar
+      jmp loop_print_title
     go_lightcyan:
       mov bx, lightCyanColor
-      jmp print_char
+      call printChar
+      jmp loop_print_title
 
 	loop_print_title:
 		lodsb
 		cmp al, '$'
 		je end_print_title
 		jmp change_color
-    print_char:
-      mov ah,0eh
-      int 10h
-      jmp loop_print_title
+
 	end_print_title:
   ret
 
@@ -287,7 +307,7 @@ clearScreen:
   ret
 
 ;-------------------------- RANDOMIZA A PALAVRA SECRETA
-randgen:
+randGen:
   mov ah, 00h  ; interrupts to get system time        
   int 1ah      ; Read system clock counter -> CX:DX now hold number of clock ticks since midnight      
   mov  ax, dx
@@ -298,7 +318,7 @@ randgen:
 
 ;-------------------------- SETA A PALAVRA SECRETA (podre mas é o que tá tendo)
 setSecretWord:
-  call randgen
+  call randGen
 
   cmp dl, 0
   je .setWord0
@@ -348,15 +368,14 @@ playerTry:
     mov ah, 0x00
     int 16h
     stosb
-    mov ah, 0eh ; Printa o caractere lido no cantinho
-		int 10h
+    call printChar
     loop getChar
   
   mov al, '$' ; Finaliza a string
   stosb
   call waitEnter  ; Espera o usuário apertar enter
-  setText 0, 0, secretWord, lightBlueColor
-  setText 1, 0, currentTry, lightCyanColor
+  printText 0, 0, secretWord, lightBlueColor
+  printText 1, 0, currentTry, lightCyanColor
   ret
 
 ;-------------------------- ATUALIZA A TELA COM A TENTATIVA ATUAL
@@ -422,9 +441,9 @@ updateGame:
 
 ;========================= GAME =========================
 __start:
-  call clean_regs
+  call cleanRegs
   call initVideo
-  setTitle 0, 0, GAME_START_STR
+  printGameTitle 0, 0, GAME_START_STR
   call waitEnter
   call clearScreen
   call initGame
