@@ -47,6 +47,7 @@ section .data
                   db   '$' ; fim da string
 
   WINNER_MESSAGE: db '  ',0ah,0dh
+                  db   '                                       ',0ah,0dh
                   db   '    C O N G R A T U L A T I O N S !    ',0ah,0dh
                   db   '                                       ',0ah,0dh
                   db   '                                       ',0ah,0dh
@@ -69,6 +70,7 @@ section .data
                   db   '$' ; end of string
 
   LOSER_MESSAGE:  db '  ',0ah,0dh
+                  db   '                                       ',0ah,0dh
                   db   '         B E T T E R   L U C K         ',0ah,0dh
                   db   '                                       ',0ah,0dh
                   db   '          N E X T   T I M E !          ',0ah,0dh
@@ -410,15 +412,16 @@ setSecretWord:
 
 ;-------------------------- JOGADOR TENTA ADIVINHAR A PALAVRA SECRETA
 playerTry:
-  xor eax, eax
   mov ecx, 5          ; Tamanho da palavra secreta
+  mov dl, 0           ; Posição inicial da string da tentativa atual
   mov edi, CURRENT_TRY ; Endereço da string da tentativa atual
 
   getChar:
     mov ah, 0x00
     int 16h
     stosb
-    call printChar
+    printCharAtCoord [numTries], dl, al
+    inc dl
     loop getChar
   
   mov al, '$' ; Finaliza a string
