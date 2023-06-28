@@ -20,7 +20,7 @@ jmp 0x0000:__start
 
 ;========================= DADOS =========================
 section .data
-  GAME_START_STR: db '  ',0ah,0dh
+  GAME_TITLE:     db '  ',0ah,0dh
                   db   ' g                 s          t        ',0ah,0dh
                   db   '           o                         o ',0ah,0dh
                   db   '      >  >  >  WORDLE x86  <  <  <     ',0ah,0dh
@@ -46,6 +46,50 @@ section .data
                   db   '   | |         @nathaliafab  | |       ',0ah,0dh
                   db   '$' ; fim da string
 
+  WINNER_MESSAGE: db '  ',0ah,0dh
+                  db   '    C O N G R A T U L A T I O N S !    ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '                _______                ',0ah,0dh
+                  db   '               /       \               ',0ah,0dh
+                  db   '              |   YOU   |              ',0ah,0dh
+                  db   '              |         |              ',0ah,0dh
+                  db   '              |   WIN!  |              ',0ah,0dh
+                  db   '              |         |              ',0ah,0dh
+                  db   '              |_________|              ',0ah,0dh
+                  db   '               \       /               ',0ah,0dh
+                  db   '                -------                ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '         You rocked WordleX86!         ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '      (press enter to play again)      ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '$' ; end of string
+
+  LOSER_MESSAGE:  db '  ',0ah,0dh
+                  db   '         B E T T E R   L U C K         ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '          N E X T   T I M E !          ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '                _______                ',0ah,0dh
+                  db   '               /       \               ',0ah,0dh
+                  db   '              |   YOU   |              ',0ah,0dh
+                  db   '              |         |              ',0ah,0dh
+                  db   '              |  LOSE!  |              ',0ah,0dh
+                  db   '              |         |              ',0ah,0dh
+                  db   '              |_________|              ',0ah,0dh
+                  db   '               \       /               ',0ah,0dh
+                  db   '                -------                ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '       Do not worry, it happens!       ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '      (press enter to play again)      ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '$' ; end of string
+
   word0: db 'apple', '$'
   word1: db 'beach', '$'
   word2: db 'candy', '$'
@@ -54,10 +98,16 @@ section .data
   ;"fairy", "grape", "honey", "image", "jelly", "kings", "lemon", "magic", "noble", "oasis", "peace", "quilt", "river", "sunny", "teeth", "unity", "vivid", "waste", "xerox", "yacht"
 
   numTries: db 0
+  
+  correct1: db 0
+  correct2: db 0
+  correct3: db 0
+  correct4: db 0
+  correct5: db 0
 
 section .bss
-  secretWord: resb 6 ; Aloca espaço para a palavra secreta
-  currentTry: resb 6 ; Aloca espaço para a tentativa atual
+  SECRET_WORD: resb 6 ; Aloca espaço para a palavra secreta
+  CURRENT_TRY: resb 6 ; Aloca espaço para a tentativa atual
 
 section .text
   global __start
@@ -352,17 +402,17 @@ setSecretWord:
     jmp .endSetWord
 
   .endSetWord:
-    mov edi, secretWord
+    mov edi, SECRET_WORD
     mov ecx, 6
     cld
-    rep movsb ; Copia os caracteres da palavra selecionada para secretWord
+    rep movsb ; Copia os caracteres da palavra selecionada para SECRET_WORD
   ret
 
 ;-------------------------- JOGADOR TENTA ADIVINHAR A PALAVRA SECRETA
 playerTry:
   xor eax, eax
   mov ecx, 5          ; Tamanho da palavra secreta
-  mov edi, currentTry ; Endereço da string da tentativa atual
+  mov edi, CURRENT_TRY ; Endereço da string da tentativa atual
 
   getChar:
     mov ah, 0x00
@@ -374,8 +424,6 @@ playerTry:
   mov al, '$' ; Finaliza a string
   stosb
   call waitEnter  ; Espera o usuário apertar enter
-  printText 0, 0, secretWord, lightBlueColor
-  printText 1, 0, currentTry, lightCyanColor
   ret
 
 ;-------------------------- DESENHA QUADRADO VERDE NO LOCAL INDICADO
@@ -400,8 +448,8 @@ wrongChar:
 
 ;-------------------------- CHECA LETRAS DA TENATIVA ATUAL COM A PALAVRA SECRETA
 checkWord:
-  mov esi, currentTry
-  mov edi, secretWord
+  mov esi, CURRENT_TRY
+  mov edi, SECRET_WORD
   
   .char0:
     xor eax, eax
@@ -411,16 +459,18 @@ checkWord:
     jne .callWrongChar1
 
     .callRightChar1:
+      mov byte [correct1], 1
       call rightChar       ; Se for igual, pula para rightChar
       jmp .char1
 
     .callWrongChar1:
+      mov byte [correct1], 0
       call wrongChar       ; Se for diferente, pula para wrongChar
       jmp .char1
 
   .char1:
-    mov esi, currentTry + 1
-    mov edi, secretWord + 1
+    mov esi, CURRENT_TRY + 1
+    mov edi, SECRET_WORD + 1
     xor eax, eax
     lodsb
     cmp al, byte [edi]
@@ -428,16 +478,18 @@ checkWord:
     jne .callWrongChar2
 
     .callRightChar2:
+      mov byte [correct2], 1
       call rightChar
       jmp .char2
         
     .callWrongChar2:
+      mov byte [correct2], 0
       call wrongChar
       jmp .char2
 
   .char2:
-    mov esi, currentTry + 2
-    mov edi, secretWord + 2
+    mov esi, CURRENT_TRY + 2
+    mov edi, SECRET_WORD + 2
     xor eax, eax
     lodsb
     cmp al, byte [edi]
@@ -445,16 +497,18 @@ checkWord:
     jne .callWrongChar3
 
     .callRightChar3:
+      mov byte [correct3], 1
       call rightChar
       jmp .char3
         
     .callWrongChar3:
+      mov byte [correct3], 0
       call wrongChar
       jmp .char3
 
   .char3:
-    mov esi, currentTry + 3
-    mov edi, secretWord + 3
+    mov esi, CURRENT_TRY + 3
+    mov edi, SECRET_WORD + 3
     xor eax, eax
     lodsb
     cmp al, byte [edi]
@@ -462,16 +516,18 @@ checkWord:
     jne .callWrongChar4
 
     .callRightChar4:
+      mov byte [correct4], 1
       call rightChar
       jmp .char4
 
     .callWrongChar4:
+      mov byte [correct4], 0
       call wrongChar
       jmp .char4
 
   .char4:
-    mov esi, currentTry + 4
-    mov edi, secretWord + 4
+    mov esi, CURRENT_TRY + 4
+    mov edi, SECRET_WORD + 4
     xor eax, eax
     lodsb
     cmp al, byte [edi]
@@ -479,18 +535,61 @@ checkWord:
     jne .callWrongChar5
 
     .callRightChar5:
+      mov byte [correct5], 1
       call rightChar
       ret
 
     .callWrongChar5:
+      mov byte [correct5], 0
       call wrongChar
       ret
+
+;-------------------------- CHECA SE O JOGADOR GANHOU
+checkWin:
+  cmp byte [correct1], 1
+  je .checkWin1
+  jmp .endCheckWin
+
+  .checkWin1:
+    cmp byte [correct2], 1
+    je .checkWin2
+    jmp .endCheckWin
+  
+  .checkWin2:
+    cmp byte [correct3], 1
+    je .checkWin3
+    jmp .endCheckWin
+
+  .checkWin3:
+    cmp byte [correct4], 1
+    je .checkWin4
+    jmp .endCheckWin
+
+  .checkWin4:
+    cmp byte [correct5], 1
+    je .playerWin
+    jmp .endCheckWin
+
+  .playerWin:
+    call clearScreen
+    printGameTitle 0, 0, WINNER_MESSAGE
+    call waitEnter
+    call __start
+
+  .endCheckWin:
+  ret
+
 
 ;-------------------------- INCREMENTA O NÚMERO DE TENTATIVAS
 incTries:
   mov al, [numTries]
   inc al
   mov [numTries], al
+  ret
+
+;-------------------------- INICIALIZA O NÚMERO DE TENTATIVAS
+initTries:
+  mov byte [numTries], 0
   ret
 
 ;-------------------------- ATUALIZA A TELA COM A TENTATIVA ATUAL
@@ -546,17 +645,20 @@ updateGame:
 ;========================= GAME =========================
 __start:
   call cleanRegs
-  call initVideo
-  printGameTitle 0, 0, GAME_START_STR
-  call waitEnter
   call clearScreen
+  call initVideo
+  printGameTitle 0, 0, GAME_TITLE
+  call waitEnter
   call initGame
   call gameLoop
-  ;call endGame
+  call endGame
   jmp $
 
 ;------------------------- INICIALIZA O JOGO
 initGame:
+  call cleanRegs
+  call clearScreen
+  call initTries
   call setSecretWord
   drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 50
   drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 100, 80
@@ -569,19 +671,22 @@ initGame:
 gameLoop:
   call playerTry
   call updateGame
-  call incTries
-  mov ecx, [numTries]
-  cmp ecx, 5
-  jne gameLoop
-  ;tentativa do player ;)
-  ;mudar cor dos quadrados de acordo com a tentativa
-  ;checar se a tentativa é igual a palavra secreta
-  ;se for, mensagem de parabéns
-  ;se não for, checar se o player perdeu
-  ;se perdeu, mensagem de game over
-  ;se não perdeu, faz outra tentativa na próxima linha
+  call checkWin
 
+  call incTries
+  mov cl, [numTries]
+  cmp cl, 5
+  jge .endGameLoop
+  jmp gameLoop
+
+  .endGameLoop:
   ret
 
 ;------------------------- FINALIZA O JOGO
-;endGame:
+endGame:
+  call cleanRegs
+  call clearScreen
+  printGameTitle 0, 0, LOSER_MESSAGE
+  call waitEnter
+  call __start
+  ret
