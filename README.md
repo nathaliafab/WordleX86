@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/nathaliafab/WordleX86/blob/main/screenshots/menu_title.png">
+  <img src="/screenshots/menu_title.png">
   <p>(inimiga do design?)</p>
 </div>
 
@@ -8,19 +8,21 @@
 Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomando como base a ideia para o meu [projeto bootloader](https://github.com/saranicoly/bootloader-asm) da cadeira Infraestrutura de Software (IF677) no CIn-UFPE.
 
 ### 🔨 To do...
-- [ ] **Telas do jogo**
+- [x] **Telas do jogo**
   - [x] Menu inicial
-  - [ ] Errou a palavra
-  - [ ] Acertou a palavra
+  - [x] Errou a palavra
+  - [x] Acertou a palavra
 - [ ] **Quadrados**
-  - [x] Desenhar quadrado na tela na cor desejada
+  - [x] Desenhar quadrado na tela na cor desejada (verde)
+  - [x] Desenhar quadrado na tela na cor desejada (vermelho)
+  - [ ] Desenhar quadrado na tela na cor desejada (amarelo)
   - [x] Desenhar quadrado específico no local correto
   - [ ] Colocar as letras nos respectivos quadrados
 - [ ] **Palavras**
-  - [ ] Pegar tentativa do usuário
-  - [ ] Checar se a tentativa é correta ou não
-  - [x] Criar/Importar um dataset de palavras para o jogo
-    - [ ] Escolher aleatoriamente uma dessas palavras para cada rodada
+  - [x] Pegar tentativa do usuário
+  - [x] Checar se a tentativa é correta ou não
+  - [x] Criar/Importar um dataset de palavras para o jogo ([issue #3](https://github.com/nathaliafab/WordleX86/issues/3))
+    - [x] Escolher aleatoriamente uma dessas palavras para cada rodada
   - [ ] Expandir para Dordle
   - [ ] Expandir para Quordle
 
@@ -52,6 +54,14 @@ O jogo apresentará uma palavra aleatória, e o jogador terá que tentar adivinh
 - Após cada jogada, o jogo irá informar quantas tentativas restantes o jogador possui.
 - Caso o jogador acerte a palavra antes do limite de tentativas, o jogo irá parabenizá-lo e perguntar se ele deseja jogar novamente.
 - Caso contrário, o jogo informará a palavra correta e perguntará se o jogador deseja jogar novamente.
+
+## 📷 Screenshots
+
+| Menu inicial                    | Tentativa do jogador              |
+|:----------------------------:|:---------------------------------:|
+| ![](/screenshots/menu_title.png) | ![](/screenshots/try.png) |
+| Acertou a palavra               | Errou a palavra                 |
+| ![](/screenshots/you_win.png) | ![](/screenshots/you_lose.png) |
 
 ## 🦝 Contribuições
 Contribuições são sempre bem-vindas! Se você encontrar um bug ou tiver uma ideia para uma melhoria no jogo, por favor, abra uma issue ou envie um pull request.
