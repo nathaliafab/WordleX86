@@ -48,6 +48,9 @@ section .data
 
   WINNER_MESSAGE: db '  ',0ah,0dh
                   db   '                                       ',0ah,0dh
+                  db   '         The secret word was:          ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '                                       ',0ah,0dh
                   db   '    C O N G R A T U L A T I O N S !    ',0ah,0dh
                   db   '                                       ',0ah,0dh
                   db   '                                       ',0ah,0dh
@@ -70,6 +73,9 @@ section .data
                   db   '$' ; end of string
 
   LOSER_MESSAGE:  db '  ',0ah,0dh
+                  db   '                                       ',0ah,0dh
+                  db   '         The secret word was:          ',0ah,0dh
+                  db   '                                       ',0ah,0dh
                   db   '                                       ',0ah,0dh
                   db   '         B E T T E R   L U C K         ',0ah,0dh
                   db   '                                       ',0ah,0dh
@@ -576,6 +582,7 @@ checkWin:
   .playerWin:
     call clearScreen
     printGameTitle 0, 0, WINNER_MESSAGE
+    printText 3, 17, SECRET_WORD, lightGreenColor
     call waitEnter
     call __start
 
@@ -690,6 +697,7 @@ endGame:
   call cleanRegs
   call clearScreen
   printGameTitle 0, 0, LOSER_MESSAGE
+  printText 3, 17, SECRET_WORD, lightGreenColor
   call waitEnter
   call __start
   ret

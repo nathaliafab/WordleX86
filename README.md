@@ -8,19 +8,21 @@
 Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomando como base a ideia para o meu [projeto bootloader](https://github.com/saranicoly/bootloader-asm) da cadeira Infraestrutura de Software (IF677) no CIn-UFPE.
 
 ### 🔨 To do...
-- [ ] **Telas do jogo**
+- [x] **Telas do jogo**
   - [x] Menu inicial
-  - [ ] Errou a palavra
-  - [ ] Acertou a palavra
+  - [x] Errou a palavra
+  - [x] Acertou a palavra
 - [ ] **Quadrados**
-  - [x] Desenhar quadrado na tela na cor desejada
+  - [x] Desenhar quadrado na tela na cor desejada (verde)
+  - [x] Desenhar quadrado na tela na cor desejada (vermelho)
+  - [ ] Desenhar quadrado na tela na cor desejada (amarelo)
   - [x] Desenhar quadrado específico no local correto
   - [ ] Colocar as letras nos respectivos quadrados
 - [ ] **Palavras**
-  - [ ] Pegar tentativa do usuário
-  - [ ] Checar se a tentativa é correta ou não
+  - [x] Pegar tentativa do usuário
+  - [x] Checar se a tentativa é correta ou não
   - [x] Criar/Importar um dataset de palavras para o jogo
-    - [ ] Escolher aleatoriamente uma dessas palavras para cada rodada
+    - [x] Escolher aleatoriamente uma dessas palavras para cada rodada
   - [ ] Expandir para Dordle
   - [ ] Expandir para Quordle
 
