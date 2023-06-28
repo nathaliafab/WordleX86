@@ -355,6 +355,8 @@ playerTry:
   mov al, '$' ; Finaliza a string
   stosb
   call waitEnter  ; Espera o usuário apertar enter
+  setText 0, 0, secretWord, lightBlueColor
+  setText 1, 0, currentTry, lightCyanColor
   ret
 
 ;-------------------------- ATUALIZA A TELA COM A TENTATIVA ATUAL
@@ -376,18 +378,47 @@ updateGame:
   ;cmp ecx, 4
   ;je .fifthLine
 
-  .firstLine:
+  .firstLine: ; ALTERAR LÓGICA: drawSquare MEXE COM VALORES SI E DI
     inc ecx
     mov [numTries], ecx
-    mov bx, 100 ; Posição x inicial da primeira linha
-    mov cx, 50  ; Posição y inicial da primeira linha
+    mov cx, 100 ; Posição x inicial da primeira linha
+    mov dx, 50  ; Posição y inicial da primeira linha
     mov esi, currentTry
     mov edi, secretWord
-    lodsb               ; Carrega o primeiro caractere da tentativa atual em al
-    cmp al, byte [edi]  ; Compara com o primeiro caractere da palavra secreta
-    ;je .rightChar       ; Se for igual, pula para rightChar
-    ;jmp .wrongChar      ; Se for diferente, pula para wrongChar
-  ret
+    jmp .checkWord
+
+    .checkWord:
+      xor eax, eax
+      lodsb            ; Carrega o caractere da tentativa atual em al e incrementa esi
+      cmp al, '$'      ; Verifica se chegou ao final da string
+      je .end
+      cmp al, byte [di]  ; Compara com o caractere da palavra secreta
+      je .rightChar       ; Se for igual, pula para rightChar
+      jmp .wrongChar      ; Se for diferente, pula para wrongChar
+      .nextChar:
+        stosb          ; Guarda o al no endereço de edi e incrementa edi
+        jmp .checkWord   ; Repete o processo até que todos os caracteres sejam comparados
+
+    .rightChar:
+      mov ax, lightGreenColor
+      mov ah, 0x0c
+      drawSquare ax, cx, dx, 20
+      add bx, 25
+      sub dx, 20    ; restaura o valor de dx
+      mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
+      jmp .nextChar
+
+    .wrongChar:
+      mov ax, lightRedColor
+      mov ah, 0x0c
+      drawSquare ax, cx, dx, 20
+      add bx, 25
+      sub dx, 20    ; restaura o valor de dx
+      mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
+      jmp .nextChar
+
+    .end:
+      ret
 
 ;========================= GAME =========================
 __start:
