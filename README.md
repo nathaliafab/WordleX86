@@ -10,8 +10,8 @@ Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomand
 ### 🔨 To do...
 - [x] **Telas do jogo**
   - [x] Menu inicial
-  - [x] Errou a palavra ([issue #6](https://github.com/nathaliafab/WordleX86/issues/6))
-  - [x] Acertou a palavra ([issue #6](https://github.com/nathaliafab/WordleX86/issues/6))
+  - [x] Errou a palavra
+  - [x] Acertou a palavra
 - [ ] **Quadrados**
   - [x] Desenhar quadrado na tela na cor desejada (verde)
   - [x] Desenhar quadrado na tela na cor desejada (vermelho)
