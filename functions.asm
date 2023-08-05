@@ -447,6 +447,10 @@ playerTry:
   getChar:
     mov ah, 0x00
     int 16h
+    cmp al, 0x61 ;a
+    jl getChar
+    cmp al, 0x7a ;z
+    jg getChar
     stosb
     printCharAtCoord [numTries], dl, al
     inc dl
