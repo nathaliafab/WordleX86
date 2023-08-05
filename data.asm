@@ -88,6 +88,9 @@ SECTION .data
 
   numTries: db 0
   
+  ; 0 -> letra errada
+  ; 1 -> letra certa, posição certa
+  ; 2 -> letra certa, posição errada
   correct1: db 0
   correct2: db 0
   correct3: db 0
