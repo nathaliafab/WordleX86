@@ -15,7 +15,7 @@ Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomand
 - [ ] **Quadrados**
   - [x] Desenhar quadrado na tela na cor desejada (verde)
   - [x] Desenhar quadrado na tela na cor desejada (vermelho)
-  - [ ] Desenhar quadrado na tela na cor desejada (amarelo) ([issue #5](https://github.com/nathaliafab/WordleX86/issues/5))
+  - [x] Desenhar quadrado na tela na cor desejada (amarelo)
   - [x] Desenhar quadrado específico no local correto
   - [ ] Colocar as letras nos respectivos quadrados ([issue #7](https://github.com/nathaliafab/WordleX86/issues/7))
 - [ ] **Palavras**
