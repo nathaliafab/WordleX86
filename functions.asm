@@ -458,7 +458,7 @@ playerTry:
   ret
 
 ;-------------------------- DESENHA QUADRADO VERDE NO LOCAL INDICADO
-rightChar:
+greenSquare:
   mov ax, lightGreenColor
   mov ah, 0x0c
   drawSquare ax, cx, dx, 20
@@ -468,7 +468,7 @@ rightChar:
   ret
 
 ;-------------------------- DESENHA QUADRADO VERMELHO NO LOCAL INDICADO
-wrongChar:
+redSquare:
   mov ax, lightRedColor
   mov ah, 0x0c
   drawSquare ax, cx, dx, 20
@@ -477,12 +477,81 @@ wrongChar:
   mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
   ret
 
+;-------------------------- DESENHA QUADRADO AMARELO NO LOCAL INDICADO
+yellowSquare:
+  mov ax, yellowColor
+  mov ah, 0x0c
+  drawSquare ax, cx, dx, 20
+  add bx, 25
+  sub dx, 20    ; restaura o valor de dx
+  mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
+  ret
+
+;-------------------------- CHECA SE LETRA ESTÁ NA PALAVRA SECRETA
+checkChar:
+  ; o caractere a ser checado está em al
+  mov edi, SECRET_WORD
+  cmp al, byte [edi]
+  je .exists1
+  jne .doesNotExist1
+
+  .exists1:
+    mov ax, 2
+    ret
+
+  .doesNotExist1:
+    cmp ax, 2
+    je .end
+    cmp al, byte [edi + 1]
+    je .exists2
+    jne .doesNotExist2
+
+  .exists2:
+    mov ax, 2
+    ret
+  
+  .doesNotExist2:
+    cmp ax, 2
+    je .end
+    cmp al, byte [edi + 2]
+    je .exists3
+    jne .doesNotExist3
+
+  .exists3:
+    mov ax, 2
+    ret
+  
+  .doesNotExist3:
+    cmp ax, 2
+    je .end
+    cmp al, byte [edi + 3]
+    je .exists4
+    jne .doesNotExist4
+
+  .exists4:
+    mov ax, 2
+    ret
+
+  .doesNotExist4:
+    cmp ax, 2
+    je .end
+    cmp al, byte [edi + 4]
+    je .exists5
+    jne .end
+
+  .exists5:
+    mov ax, 2
+    ret
+
+  .end:
+    ret
+
 ;-------------------------- CHECA LETRAS DA TENATIVA ATUAL COM A PALAVRA SECRETA
 checkWord:
   mov esi, CURRENT_TRY
   mov edi, SECRET_WORD
   
-  .char0:
+  .char1:
     xor eax, eax
     lodsb            ; Carrega o caractere da tentativa atual em al e incrementa esi
     cmp al, byte [edi]  ; Compara com o caractere da palavra secreta
@@ -491,15 +560,26 @@ checkWord:
 
     .callRightChar1:
       mov byte [correct1], 1
-      call rightChar       ; Se for igual, pula para rightChar
-      jmp .char1
+      call greenSquare       ; Se for igual, pula para greenSquare
+      jmp .char2
 
     .callWrongChar1:
-      mov byte [correct1], 0
-      call wrongChar       ; Se for diferente, pula para wrongChar
-      jmp .char1
+      call checkChar       ; Vê se a letra existe na palavra em alguma posição, se sim, ax = 2
+      cmp ax, 2
+      je .drawYellowSquare1
+      jne .drawRedSquare1
 
-  .char1:
+      .drawYellowSquare1:
+        mov byte [correct1], 2
+        call yellowSquare
+        jmp .char2
+
+      .drawRedSquare1:
+        mov byte [correct1], 0
+        call redSquare
+        jmp .char2
+
+  .char2:
     mov esi, CURRENT_TRY + 1
     mov edi, SECRET_WORD + 1
     xor eax, eax
@@ -510,15 +590,26 @@ checkWord:
 
     .callRightChar2:
       mov byte [correct2], 1
-      call rightChar
-      jmp .char2
+      call greenSquare
+      jmp .char3
         
     .callWrongChar2:
-      mov byte [correct2], 0
-      call wrongChar
-      jmp .char2
+      call checkChar       ; Vê se a letra existe na palavra em alguma posição, se sim, ax = 2
+      cmp ax, 2
+      je .drawYellowSquare2
+      jne .drawRedSquare2
 
-  .char2:
+      .drawYellowSquare2:
+        mov byte [correct2], 2
+        call yellowSquare
+        jmp .char3
+
+      .drawRedSquare2:
+        mov byte [correct2], 0
+        call redSquare
+        jmp .char3
+
+  .char3:
     mov esi, CURRENT_TRY + 2
     mov edi, SECRET_WORD + 2
     xor eax, eax
@@ -529,15 +620,26 @@ checkWord:
 
     .callRightChar3:
       mov byte [correct3], 1
-      call rightChar
-      jmp .char3
+      call greenSquare
+      jmp .char4
         
     .callWrongChar3:
-      mov byte [correct3], 0
-      call wrongChar
-      jmp .char3
+      call checkChar       ; Vê se a letra existe na palavra em alguma posição, se sim, ax = 2
+      cmp ax, 2
+      je .drawYellowSquare3
+      jne .drawRedSquare3
 
-  .char3:
+      .drawYellowSquare3:
+        mov byte [correct3], 2
+        call yellowSquare
+        jmp .char4
+      
+      .drawRedSquare3:
+        mov byte [correct3], 0
+        call redSquare
+        jmp .char4
+
+  .char4:
     mov esi, CURRENT_TRY + 3
     mov edi, SECRET_WORD + 3
     xor eax, eax
@@ -548,15 +650,26 @@ checkWord:
 
     .callRightChar4:
       mov byte [correct4], 1
-      call rightChar
-      jmp .char4
+      call greenSquare
+      jmp .char5
 
     .callWrongChar4:
-      mov byte [correct4], 0
-      call wrongChar
-      jmp .char4
+      call checkChar       ; Vê se a letra existe na palavra em alguma posição, se sim, ax = 2
+      cmp ax, 2
+      je .drawYellowSquare4
+      jne .drawRedSquare4
 
-  .char4:
+      .drawYellowSquare4:
+        mov byte [correct4], 2
+        call yellowSquare
+        jmp .char5
+      
+      .drawRedSquare4:
+        mov byte [correct4], 0
+        call redSquare
+        jmp .char5
+
+  .char5:
     mov esi, CURRENT_TRY + 4
     mov edi, SECRET_WORD + 4
     xor eax, eax
@@ -567,13 +680,27 @@ checkWord:
 
     .callRightChar5:
       mov byte [correct5], 1
-      call rightChar
-      ret
+      call greenSquare
+      jmp .end
 
     .callWrongChar5:
-      mov byte [correct5], 0
-      call wrongChar
-      ret
+      call checkChar       ; Vê se a letra existe na palavra em alguma posição, se sim, ax = 2
+      cmp ax, 2
+      je .drawYellowSquare5
+      jne .drawRedSquare5
+
+      .drawYellowSquare5:
+        mov byte [correct5], 2
+        call yellowSquare
+        jmp .end
+      
+      .drawRedSquare5:
+        mov byte [correct5], 0
+        call redSquare
+        jmp .end
+
+  .end:
+    ret
 
 ;-------------------------- INCREMENTA O NÚMERO DE TENTATIVAS
 incTries:
