@@ -78,13 +78,36 @@ SECTION .data
                   db   '                                       ',0ah,0dh
                   db   '$' ; end of string
 
-  word0: db 'apple', '$'
-  word1: db 'beach', '$'
-  word2: db 'candy', '$'
-  word3: db 'daisy', '$'
-  word4: db 'eagle', '$'
-  word5: db 'rural', '$'
-  ;"fairy", "grape", "honey", "image", "jelly", "kings", "lemon", "magic", "noble", "oasis", "peace", "quilt", "river", "sunny", "teeth", "unity", "vivid", "waste", "xerox", "yacht"
+  words db 'apple', '$',
+        db 'beach', '$',
+        db 'candy', '$',
+        db 'daisy', '$',
+        db 'eagle', '$',
+        db 'rural', '$',
+        db 'ufrpe', '$',
+        db 'fairy', '$',
+        db 'grape', '$',
+        db 'honey', '$',
+        db 'image', '$',
+        db 'jelly', '$',
+        db 'kitty', '$',
+        db 'lemon', '$',
+        db 'magic', '$',
+        db 'noble', '$',
+        db 'oasis', '$',
+        db 'peace', '$',
+        db 'quilt', '$',
+        db 'river', '$',
+        db 'sunny', '$',
+        db 'teeth', '$',
+        db 'unity', '$',
+        db 'vivid', '$',
+        db 'waste', '$',
+        db 'xerox', '$',
+        db 'yacht', '$',
+        db 'zebra', '$'
+  
+  num_words equ ($ - words) / 6
 
   numTries: db 0
   

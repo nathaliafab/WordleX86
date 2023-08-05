@@ -381,60 +381,32 @@ clearScreen:
 ;================================================ PALAVRA SECRETA ================================================
 ;-------------------------- RANDOMIZA A PALAVRA SECRETA
 randGen:
-  mov ah, 00h  ; interrupts to get system time        
-  int 1ah      ; Read system clock counter -> CX:DX now hold number of clock ticks since midnight      
-  mov  ax, dx
-  xor  dx, dx
-  mov  cx, 6
-  div  cx      ; here dx contains the remainder of the division - from 0 to 5
+  ; Generate a pseudo-random number using the TSC as seed
+  rdtsc                ; Read the TSC into EDX:EAX
+  add eax, edx         ; Add the high and low parts of TSC
+  mov ebx, eax         ; Use the TSC value as the seed for the random number
+
+  ; Generate a random number between 0 and the total number of words
+  xor edx, edx         ; Clear EDX to store the remainder
+  mov ecx, num_words
+  div ecx              ; Divide the seed (EAX) by the word count (ECX)
+  mov eax, edx         ; Use the remainder (EDX) as the random number
   ret
 
 ;-------------------------- SETA A PALAVRA SECRETA
 setSecretWord:
   call randGen
 
-  cmp dl, 0
-  je .setWord0
-  cmp dl, 1
-  je .setWord1
-  cmp dl, 2
-  je .setWord2
-  cmp dl, 3
-  je .setWord3
-  cmp dl, 4
-  je .setWord4
-  cmp dl, 5
-  je .setWord5
+  ; Find the address of the randomly chosen word
+  mov esi, words       ; Load the address of the array into esi
+  mov ecx, 6
+  mul ecx              ; Multiply the random number by 6 (the size of each word)
+  add esi, eax         ; esi = words + (random number * 6)
 
-  .setWord0:
-    mov esi, word0
-    jmp .endSetWord
-
-  .setWord1:
-    mov esi, word1
-    jmp .endSetWord
-
-  .setWord2:
-    mov esi, word2
-    jmp .endSetWord
-  
-  .setWord3:
-    mov esi, word3
-    jmp .endSetWord
-
-  .setWord4:
-    mov esi, word4
-    jmp .endSetWord
-
-  .setWord5:
-    mov esi, word5
-    jmp .endSetWord
-
-  .endSetWord:
-    mov edi, SECRET_WORD
-    mov ecx, 6
-    cld
-    rep movsb ; Copia os caracteres da palavra selecionada para SECRET_WORD
+  mov edi, SECRET_WORD
+  mov ecx, 6
+  cld
+  rep movsb ; Copia os caracteres da palavra selecionada para SECRET_WORD
   ret
 
 ;================================================ TENATIVAS ================================================
