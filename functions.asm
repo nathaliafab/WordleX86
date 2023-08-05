@@ -447,6 +447,8 @@ playerTry:
   getChar:
     mov ah, 0x00
     int 16h
+    cmp al, 0x08 ;backspace
+    je .backspace
     cmp al, 0x61 ;a
     jl getChar
     cmp al, 0x7a ;z
@@ -455,10 +457,28 @@ playerTry:
     printCharAtCoord [numTries], dl, al
     inc dl
     loop getChar
+    jmp .end
+
+  .backspace:
+    cmp dl, 0     ; Se for o primeiro caractere, não faz nada
+    je getChar
+    dec dl        ; Decrementa o valor de dl para sobrescrever o caractere anterior
+    mov al, ' '
+    printCharAtCoord [numTries], dl, al
+    inc ecx       ; Incrementa o valor de ecx para não contabilizar o caractere apagado
+    dec edi       ; Decrementa o valor de edi para sobrescrever o caractere anterior
+    jmp getChar
   
-  mov al, '$' ; Finaliza a string
-  stosb
-  call waitEnter  ; Espera o usuário apertar enter
+  .end:
+    mov ah, 0x00
+    int 16h
+    cmp al, 0x08 ;backspace
+    je .backspace
+    cmp al, 0x0d ;enter
+    jne .end
+
+    mov al, '$' ; Finaliza a string
+    stosb
   ret
 
 ;-------------------------- DESENHA QUADRADO VERDE NO LOCAL INDICADO
