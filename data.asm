@@ -78,34 +78,51 @@ SECTION .data
                   db   '                                       ',0ah,0dh
                   db   '$' ; end of string
 
-  words db 'apple', '$',
-        db 'beach', '$',
-        db 'candy', '$',
-        db 'daisy', '$',
-        db 'eagle', '$',
+  words db 'amigo', '$',
+        db 'ampla', '$',
+        db 'bruto', '$',
+        db 'campo', '$',
+        db 'certo', '$',
+        db 'corpo', '$',
+        db 'fazer', '$',
+        db 'feliz', '$',
+        db 'grito', '$',
+        db 'jovem', '$',
+        db 'livro', '$',
+        db 'lugar', '$',
         db 'rural', '$',
         db 'ufrpe', '$',
-        db 'fairy', '$',
-        db 'grape', '$',
-        db 'honey', '$',
-        db 'image', '$',
-        db 'jelly', '$',
-        db 'kitty', '$',
-        db 'lemon', '$',
-        db 'magic', '$',
-        db 'noble', '$',
-        db 'oasis', '$',
-        db 'peace', '$',
-        db 'quilt', '$',
-        db 'river', '$',
-        db 'sunny', '$',
-        db 'teeth', '$',
-        db 'unity', '$',
-        db 'vivid', '$',
-        db 'waste', '$',
-        db 'xerox', '$',
-        db 'yacht', '$',
-        db 'zebra', '$'
+        db 'mundo', '$',
+        db 'nasal', '$',
+        db 'oeste', '$',
+        db 'perto', '$',
+        db 'abrir', '$',
+        db 'bater', '$',
+        db 'chefe', '$',
+        db 'dente', '$',
+        db 'elega', '$',
+        db 'fugir', '$',
+        db 'girar', '$',
+        db 'haste', '$',
+        db 'igual', '$',
+        db 'jogar', '$',
+        db 'lindo', '$',
+        db 'mover', '$',
+        db 'negro', '$',
+        db 'odiar', '$',
+        db 'poder', '$',
+        db 'risco', '$',
+        db 'salto', '$',
+        db 'tigre', '$',
+        db 'vital', '$',
+        db 'zelar', '$',
+        db 'doces', '$',
+        db 'praia', '$',
+        db 'unido', '$',
+        db 'nobre', '$',
+        db 'fadas', '$',
+        db 'zebra', '$',
+        db 'magia', '$'
   
   num_words equ ($ - words) / 6
 
@@ -113,7 +130,6 @@ SECTION .data
   
   ; 0 -> letra errada
   ; 1 -> letra certa, posição certa
-  ; 2 -> letra certa, posição errada
   correct1: db 0
   correct2: db 0
   correct3: db 0
