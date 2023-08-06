@@ -51,7 +51,7 @@ printColorText:
 	loop_print_string:
 		lodsb
 		test al, al ; verifica se chegou no fim da string
-		je .end_print_string
+		jz .end_print_string
 		call printChar
 		jmp loop_print_string
 	.end_print_string:
@@ -152,7 +152,7 @@ printColorTitle:
 	.loop_print_msg:
 		lodsb
 		test al, al
-		je .end_print
+		jz .end_print
 		jmp .change_color
 
 	.end_print:
@@ -277,7 +277,7 @@ printColorEnd:
 	.loop_print_msg:
 		lodsb
 		test al, al
-		je .end_print
+		jz .end_print
 		jmp .change_color
 
 	.end_print:
