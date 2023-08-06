@@ -645,9 +645,8 @@ checkWord:
   mov edi, SECRET_WORD
   
   .char1:
-    xor eax, eax
     lodsb            ; Carrega o caractere da tentativa atual em al e incrementa esi
-    cmp al, byte [edi]  ; Compara com o caractere da palavra secreta
+    cmp byte [correct1], 1
     je .callRightChar1
     jne .callWrongChar1
 
@@ -671,10 +670,8 @@ checkWord:
 
   .char2:
     mov esi, CURRENT_TRY + 1
-    mov edi, SECRET_WORD + 1
-    xor eax, eax
     lodsb
-    cmp al, byte [edi]
+    cmp byte [correct2], 1
     je .callRightChar2
     jne .callWrongChar2
 
@@ -698,10 +695,8 @@ checkWord:
 
   .char3:
     mov esi, CURRENT_TRY + 2
-    mov edi, SECRET_WORD + 2
-    xor eax, eax
     lodsb
-    cmp al, byte [edi]
+    cmp byte [correct3], 1
     je .callRightChar3
     jne .callWrongChar3
 
@@ -725,10 +720,8 @@ checkWord:
 
   .char4:
     mov esi, CURRENT_TRY + 3
-    mov edi, SECRET_WORD + 3
-    xor eax, eax
     lodsb
-    cmp al, byte [edi]
+    cmp byte [correct4], 1
     je .callRightChar4
     jne .callWrongChar4
 
@@ -752,10 +745,8 @@ checkWord:
 
   .char5:
     mov esi, CURRENT_TRY + 4
-    mov edi, SECRET_WORD + 4
-    xor eax, eax
     lodsb
-    cmp al, byte [edi]
+    cmp byte [correct5], 1
     je .callRightChar5
     jne .callWrongChar5
 
