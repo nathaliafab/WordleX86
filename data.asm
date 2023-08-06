@@ -78,54 +78,6 @@ SECTION .data
                   db   '                                       ',0ah,0dh
                   db   0 ; end of string
 
-  words db 'amigo', 0,
-        db 'ampla', 0,
-        db 'bruto', 0,
-        db 'campo', 0,
-        db 'certo', 0,
-        db 'corpo', 0,
-        db 'fazer', 0,
-        db 'feliz', 0,
-        db 'grito', 0,
-        db 'jovem', 0,
-        db 'livro', 0,
-        db 'lugar', 0,
-        db 'rural', 0,
-        db 'ufrpe', 0,
-        db 'mundo', 0,
-        db 'nasal', 0,
-        db 'oeste', 0,
-        db 'perto', 0,
-        db 'abrir', 0,
-        db 'bater', 0,
-        db 'chefe', 0,
-        db 'dente', 0,
-        db 'elega', 0,
-        db 'fugir', 0,
-        db 'girar', 0,
-        db 'haste', 0,
-        db 'igual', 0,
-        db 'jogar', 0,
-        db 'lindo', 0,
-        db 'mover', 0,
-        db 'negro', 0,
-        db 'odiar', 0,
-        db 'poder', 0,
-        db 'risco', 0,
-        db 'salto', 0,
-        db 'tigre', 0,
-        db 'vital', 0,
-        db 'zelar', 0,
-        db 'doces', 0,
-        db 'praia', 0,
-        db 'unido', 0,
-        db 'nobre', 0,
-        db 'fadas', 0,
-        db 'zebra', 0,
-        db 'magia', 0
-  
-  num_words equ ($ - words) / 6
-
   numTries: db 0
   
   ; 0 -> letra errada

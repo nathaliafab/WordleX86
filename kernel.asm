@@ -20,6 +20,7 @@ jmp 0x0000:main
 
 %include "functions.asm"
 %include "data.asm"
+%include "words.asm"
 
 SECTION .bss
   SECRET_WORD: resb 6 ; Aloca espaço para a palavra secreta
