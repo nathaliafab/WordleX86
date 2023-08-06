@@ -50,7 +50,7 @@ printChar:
 printColorText:
 	loop_print_string:
 		lodsb
-		cmp al, '$'
+		test al, al ; verifica se chegou no fim da string
 		je .end_print_string
 		call printChar
 		jmp loop_print_string
@@ -151,7 +151,7 @@ printColorTitle:
 
 	.loop_print_msg:
 		lodsb
-		cmp al, '$'
+		test al, al
 		je .end_print
 		jmp .change_color
 
@@ -276,7 +276,7 @@ printColorEnd:
 
 	.loop_print_msg:
 		lodsb
-		cmp al, '$'
+		test al, al
 		je .end_print
 		jmp .change_color
 
@@ -449,7 +449,7 @@ playerTry:
     cmp al, 0x0d ;enter
     jne .end
 
-    mov al, '$' ; Finaliza a string
+    mov al, 0 ; Finaliza a string
     stosb
   ret
 
