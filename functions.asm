@@ -1,11 +1,12 @@
 ;================================================ PRINTS ================================================
-%macro printCharAtCoord 3
+%macro printCharAtCoord 4
   mov ah, 02h  ; Setando o cursor
   mov bh, 0    ; Página 0
   mov dh, %1   ; Linha (x)
   mov dl, %2   ; Coluna (y)
   int 10h
   mov al, %3   ; Caractere
+  mov bl, %4   ; Cor do char
   call printChar
 %endmacro
 
@@ -335,9 +336,9 @@ draw_square:
 %endmacro
 
 draw_next_sq:
-  drawSquare ax, cx, dx, 20
-  add bx, 25
-  sub dx, 20    ; restaura o valor de dx
+  drawSquare ax, cx, dx, 15
+  add bx, 23
+  sub dx, 15    ; restaura o valor de dx
   mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
   ret
 
@@ -410,11 +411,54 @@ setSecretWord:
   ret
 
 ;================================================ TENATIVAS ================================================
+;-------------------------- CALCULA A COORDENADA DO CARACTERE
+calcCharCoord:
+  cmp byte[numTries], 0
+  je .firstTry
+  cmp byte[numTries], 1
+  je .secondTry
+  cmp byte[numTries], 2
+  je .thirdTry
+  cmp byte[numTries], 3
+  je .fourthTry
+  cmp byte[numTries], 4
+  je .fifthTry
+  cmp byte[numTries], 5
+  je .sixthTry
+
+  .firstTry:
+    mov byte[charCoord], 2
+    jmp .end
+  
+  .secondTry:
+    mov byte[charCoord], 5
+    jmp .end
+
+  .thirdTry:
+    mov byte[charCoord], 8
+    jmp .end
+  
+  .fourthTry:
+    mov byte[charCoord], 11
+    jmp .end
+  
+  .fifthTry:
+    mov byte[charCoord], 14
+    jmp .end
+
+  .sixthTry:
+    mov byte[charCoord], 17
+  
+  .end:
+    ret
+
 ;-------------------------- JOGADOR TENTA ADIVINHAR A PALAVRA SECRETA
 playerTry:
   mov ecx, 5          ; Tamanho da palavra secreta
-  mov dl, 0           ; Posição inicial da string da tentativa atual
+  mov dl, 14           ; Posição inicial da string da tentativa atual
   mov edi, CURRENT_TRY ; Endereço da string da tentativa atual
+
+  call calcCharCoord
 
   getChar:
     mov ah, 0x00
@@ -426,17 +470,17 @@ playerTry:
     cmp al, 0x7a ;z
     jg getChar
     stosb
-    printCharAtCoord [numTries], dl, al
-    inc dl
+    printCharAtCoord [charCoord], dl, al, whiteColor
+    add dl, 3
     loop getChar
     jmp .end
 
   .backspace:
-    cmp dl, 0     ; Se for o primeiro caractere, não faz nada
+    cmp dl, 14     ; Se for o primeiro caractere, não faz nada
     je getChar
-    dec dl        ; Decrementa o valor de dl para sobrescrever o caractere anterior
+    sub dl, 3        ; Decrementa o valor de dl para sobrescrever o caractere anterior
     mov al, ' '
-    printCharAtCoord [numTries], dl, al
+    printCharAtCoord [charCoord], dl, al, whiteColor
     inc ecx       ; Incrementa o valor de ecx para não contabilizar o caractere apagado
     dec edi       ; Decrementa o valor de edi para sobrescrever o caractere anterior
     jmp getChar
@@ -457,9 +501,9 @@ playerTry:
 greenSquare:
   mov ax, lightGreenColor
   mov ah, 0x0c
-  drawSquare ax, cx, dx, 20
-  add bx, 25
-  sub dx, 20    ; restaura o valor de dx
+  drawSquare ax, cx, dx, 15
+  add bx, 23
+  sub dx, 15    ; restaura o valor de dx
   mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
   ret
 
@@ -467,9 +511,9 @@ greenSquare:
 redSquare:
   mov ax, lightRedColor
   mov ah, 0x0c
-  drawSquare ax, cx, dx, 20
-  add bx, 25
-  sub dx, 20    ; restaura o valor de dx
+  drawSquare ax, cx, dx, 15
+  add bx, 23
+  sub dx, 15    ; restaura o valor de dx
   mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
   ret
 
@@ -477,9 +521,9 @@ redSquare:
 yellowSquare:
   mov ax, yellowColor
   mov ah, 0x0c
-  drawSquare ax, cx, dx, 20
-  add bx, 25
-  sub dx, 20    ; restaura o valor de dx
+  drawSquare ax, cx, dx, 15
+  add bx, 23
+  sub dx, 15    ; restaura o valor de dx
   mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
   ret
 
@@ -769,6 +813,14 @@ checkWord:
         jmp .end
 
   .end:
+    mov cx, 5
+    mov esi, CURRENT_TRY
+    mov dl, 14
+    .printCurrentTry:
+      lodsb
+      printCharAtCoord [charCoord], dl, al, whiteColor
+      add dl, 3
+      loop .printCurrentTry
     ret
 
 ;-------------------------- INCREMENTA O NÚMERO DE TENTATIVAS
@@ -781,6 +833,7 @@ incTries:
 ;-------------------------- INICIALIZA O NÚMERO DE TENTATIVAS
 initTries:
   mov byte [numTries], 0
+  mov byte [charCoord], 0
   ret
 
 ;-------------------------- ATUALIZA A TELA COM A TENTATIVA ATUAL
@@ -800,33 +853,42 @@ updateGame:
   cmp byte [numTries], 4
   je .fifthLine
 
+  cmp byte [numTries], 5
+  je .sixthLine
+
   .firstLine:
-    mov cx, 100 ; Posição x inicial da primeira linha
-    mov dx, 50  ; Posição y inicial da primeira linha
+    mov cx, 110 ; Posição x inicial da primeira linha
+    mov dx, 10  ; Posição y inicial da primeira linha
     call checkWord
     jmp .end
 
   .secondLine:
-    mov cx, 100 ; Posição x inicial da segunda linha
-    mov dx, 80  ; Posição y inicial da segunda linha
+    mov cx, 110 ; Posição x inicial da segunda linha
+    mov dx, 34  ; Posição y inicial da segunda linha
     call checkWord
     jmp .end
 
   .thirdLine:
-    mov cx, 100 ; Posição x inicial da terceira linha
-    mov dx, 110 ; Posição y inicial da terceira linha
+    mov cx, 110 ; Posição x inicial da terceira linha
+    mov dx, 58  ; Posição y inicial da terceira linha
     call checkWord
     jmp .end
   
   .fourthLine:
-    mov cx, 100 ; Posição x inicial da quarta linha
-    mov dx, 140 ; Posição y inicial da quarta linha
+    mov cx, 110 ; Posição x inicial da quarta linha
+    mov dx, 82  ; Posição y inicial da quarta linha
     call checkWord
     jmp .end
 
   .fifthLine:
-    mov cx, 100 ; Posição x inicial da quinta linha
-    mov dx, 170 ; Posição y inicial da quinta linha
+    mov cx, 110 ; Posição x inicial da quinta linha
+    mov dx, 106 ; Posição y inicial da quinta linha
+    call checkWord
+    jmp .end
+
+  .sixthLine:
+    mov cx, 110 ; Posição x inicial da sexta linha
+    mov dx, 130 ; Posição y inicial da sexta linha
     call checkWord
     jmp .end
 
