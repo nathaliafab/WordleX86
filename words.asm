@@ -1,4 +1,4 @@
-words   db 'rural', 0
+WORDS   db 'rural', 0
         db 'ufrpe', 0
         db 'sagaz', 0
         db 'negro', 0
@@ -970,4 +970,4 @@ words   db 'rural', 0
         db 'soror', 0
         db 'fecho', 0
 
-num_words equ ($ - words) / 6
+NUM_WORDS equ ($ - WORDS) / 6

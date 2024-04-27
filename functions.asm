@@ -1,5 +1,5 @@
 ;================================================ PRINTS ================================================
-%macro printCharAtCoord 4
+%macro putcharAtCoord 4
   mov ah, 02h  ; Setando o cursor
   mov bh, 0    ; Página 0
   mov dh, %1   ; Linha (x)
@@ -7,10 +7,10 @@
   int 10h
   mov al, %3   ; Caractere
   mov bl, %4   ; Cor do char
-  call printChar
+  call putchar
 %endmacro
 
-%macro printText 4
+%macro printString 4
 	mov ah, 02h  ; Setando o cursor
 	mov bh, 0    ; Página 0
 	mov dh, %1   ; Linha (x)
@@ -18,172 +18,136 @@
 	int 10h
 	mov si, %3  ; String
 	mov bx, %4  ; Cor
-	call printColorText
+	call print_string
 %endmacro
 
-%macro printGameTitle 3
+%macro printTitle 3
 	mov ah, 02h  ; Setando o cursor
 	mov bh, 0    ; Página 0
 	mov dh, %1   ; Linha (x)
 	mov dl, %2   ; Coluna (y)
 	int 10h
 	mov si, %3   ; String
-	call printColorTitle
+	call print_title
 %endmacro
 
-%macro printGameEnd 3
+%macro printEnd 3
 	mov ah, 02h  ; Setando o cursor
 	mov bh, 0    ; Página 0
 	mov dh, %1   ; Linha (x)
 	mov dl, %2   ; Coluna (y)
 	int 10h
 	mov si, %3   ; String
-	call printColorEnd
+	call print_end
 %endmacro
 
 ;------------------------- PRINTA CARACTERE EM AL
-printChar:
+putchar:
   mov ah, 0eh
   int 10h
   ret
 
 ;------------------------- PRINTA STRING COM COR ESPECIFICADA EM BX
-printColorText:
-	.loop_print_string:
+print_string:
+	.loop_ps:
 		lodsb
 		test al, al ; verifica se chegou no fim da string
-		jz .end_print_string
-		call printChar
-		jmp .loop_print_string
-	.end_print_string:
-  ret
-
-;------------------------- PRINTA KEYBOARD EMBAIXO
-printColorKeyboard:
-  mov di, keyboard_status
-  cmp byte [di], 0
-  je .setColorNotPressed
-  cmp byte [di], 1
-  je .setColorIncorrect
-  cmp byte [di], 2
-  je .setColorMisplaced
-  cmp byte [di], 3
-  je .setColorCorrect
-
-  .setColorNotPressed:
-    mov bx, darkGrayColor
-    jmp .loop_print_string
-  
-  .setColorIncorrect:
-    mov bx, lightRedColor
-    jmp .loop_print_string
-  
-  .setColorMisplaced:
-    mov bx, yellowColor
-    jmp .loop_print_string
-  
-  .setColorCorrect:
-    mov bx, lightGreenColor
-  
-	.loop_print_string:
-		lodsb
-		test al, al ; verifica se chegou no fim da string
-		jz .end_print_string
-		call printChar
-		jmp .loop_print_string
-	.end_print_string:
+		jz .end
+		call putchar
+		jmp .loop_ps
+	.end:
   ret
 
 ;------------------------- PRINTA TÍTULO COM CORES PREDEFINIDAS
-printColorTitle:
+print_title:
   .change_color:
     cmp al, 0x3d ;=
-    je .go_lightgreen
+    je .set_lightgreen
     cmp al, 0x2d ;-
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x3c ;<
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x3e ;>
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x7c ;|
-    je .go_lightgreen
+    je .set_lightgreen
     cmp al, 0x57 ;W
-    je .go_green
+    je .set_green
     cmp al, 0x4f ;O
-    je .go_red
+    je .set_red
     cmp al, 0x52 ;R
-    je .go_yellow
+    je .set_yellow
     cmp al, 0x44 ;D
-    je .go_red
+    je .set_red
     cmp al, 0x4c ;L
-    je .go_yellow
+    je .set_yellow
     cmp al, 0x45 ;E
-    je .go_green
+    je .set_green
     cmp al, 0x78 ;x
-    je .go_red
+    je .set_red
     cmp al, 0x38 ;8
-    je .go_green
+    je .set_green
     cmp al, 0x36 ;6
-    je .go_red
+    je .set_red
     cmp al, 0x28 ;(
-    je .go_magenta
+    je .set_magenta
     cmp al, 0x29 ;)
-    je .go_magenta
+    je .set_magenta
     cmp al, 0x2f ;/
-    je .go_magenta
+    je .set_magenta
     cmp al, 0x5f ;_
-    je .go_magenta
+    je .set_magenta
     cmp al, 0x70 ;p
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x72 ;r
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x65 ;e
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x73 ;s
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x6e ;n
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x74 ;t
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x6f ;o
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x61 ;a
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x40 ;@
-    je .go_lightgreen
-    jmp .go_lightred
+    je .set_lightgreen
+    jmp .set_lightred
 
-    .go_magenta:
+    .set_magenta:
       mov bx, magentaColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_lightgreen:
+    .set_lightgreen:
       mov bx, lightGreenColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_lightred:
+    .set_lightred:
       mov bx, lightRedColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_green:
+    .set_green:
       mov bx, greenColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_yellow:
+    .set_yellow:
       mov bx, yellowColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_red:
+    .set_red:
       mov bx, redColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_lightblue:
+    .set_lightblue:
       mov bx, lightBlueColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_lightcyan:
+    .set_lightcyan:
       mov bx, lightCyanColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
 
 	.loop_print_msg:
@@ -196,119 +160,119 @@ printColorTitle:
   ret
 
 ;------------------------- PRINTA WIN/LOSE COM CORES PREDEFINIDAS
-printColorEnd:
+print_end:
   .change_color:
     ;;========================= WORDLE x86
     cmp al, 0x57 ;W
-    je .go_green
+    je .set_green
     cmp al, 0x4f ;O
-    je .go_red
+    je .set_red
     cmp al, 0x52 ;R
-    je .go_yellow
+    je .set_yellow
     cmp al, 0x44 ;D
-    je .go_red
+    je .set_red
     cmp al, 0x4c ;L
-    je .go_yellow
+    je .set_yellow
     cmp al, 0x45 ;E
-    je .go_green
+    je .set_green
     cmp al, 0x78 ;x
-    je .go_red
+    je .set_red
     cmp al, 0x38 ;8
-    je .go_green
+    je .set_green
     cmp al, 0x36 ;6
-    je .go_red
+    je .set_red
     ;;========================= PARÊNTESES E AFINS
     cmp al, 0x28 ;(
-    je .go_magenta
+    je .set_magenta
     cmp al, 0x29 ;)
-    je .go_magenta
+    je .set_magenta
     cmp al, 0x2f ;/
-    je .go_magenta
+    je .set_magenta
     cmp al, 0x5f ;_
-    je .go_magenta
+    je .set_magenta
     cmp al, 0x3d ;=
-    je .go_lightgreen
+    je .set_lightgreen
     cmp al, 0x2d ;-
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x3c ;<
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x3e ;>
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x7c ;|
-    je .go_lightgreen
+    je .set_lightgreen
     cmp al, 0x40 ;@
-    je .go_lightgreen
+    je .set_lightgreen
     ;;========================= press enter to play again
     cmp al, 0x70 ;p
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x72 ;r
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x65 ;e
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x73 ;s
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x6e ;n
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x74 ;t
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x6f ;o
-    je .go_lightcyan
+    je .set_lightcyan
     cmp al, 0x61 ;a
-    je .go_lightcyan
+    je .set_lightcyan
     ;;========================= CONGRATULATIONS
     cmp al, 0x43 ;C
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x47 ;G
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x41 ;A
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x54 ;T
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x55 ;U
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x49 ;I
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x4e ;N
-    je .go_lightblue
+    je .set_lightblue
     cmp al, 0x53 ;S
-    je .go_lightblue
+    je .set_lightblue
     ;;========================= YOU WIN
     cmp al, 0x59 ;Y
-    je .go_lightcyan
+    je .set_lightcyan
 
-    jmp .go_cyan
+    jmp .set_cyan
 
-    .go_magenta:
+    .set_magenta:
       mov bx, magentaColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_lightgreen:
+    .set_lightgreen:
       mov bx, lightGreenColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_cyan:
+    .set_cyan:
       mov bx, cyanColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_green:
+    .set_green:
       mov bx, greenColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_yellow:
+    .set_yellow:
       mov bx, yellowColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_red:
+    .set_red:
       mov bx, redColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_lightblue:
+    .set_lightblue:
       mov bx, lightBlueColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
-    .go_lightcyan:
+    .set_lightcyan:
       mov bx, lightCyanColor
-      call printChar
+      call putchar
       jmp .loop_print_msg
 
 	.loop_print_msg:
@@ -320,15 +284,51 @@ printColorEnd:
 	.end_print:
   ret
 
-;------------------------- PRINTA KEYBOARD EMBAIXO
+;------------------------- PRINTA KEYBOARD EMBAIXO DA TELA COM CORES PREDEFINIDAS
+print_kr:
+  .loop_ps:
+    cmp byte[di], 0
+    je .set_n_pressed
+    cmp byte[di], 1
+    je .set_incorrect
+    cmp byte[di], 2
+    je .set_misplaced
+    cmp byte[di], 3
+    je .set_correct
+
+    .set_n_pressed:
+      mov bx, darkGrayColor
+      jmp .print_key
+    
+    .set_incorrect:
+      mov bx, lightRedColor
+      jmp .print_key
+    
+    .set_misplaced:
+      mov bx, yellowColor
+      jmp .print_key
+    
+    .set_correct:
+      mov bx, lightGreenColor
+    
+    .print_key:
+      lodsb
+      call putchar
+      inc di
+      loop .loop_ps
+  ret
+
 printKeyboard:
+  mov di, KEYBOARD_STATUS
+  
   mov ah, 02h  ; Setando o cursor
 	mov bh, 0    ; Página 0
 	mov dh, 20
 	mov dl, 15
 	int 10h
 	mov si, KEYBOARD_KEYS1
-	call printColorKeyboard
+  mov cx, 10
+	call print_kr
 
   mov ah, 02h  ; Setando o cursor
 	mov bh, 0    ; Página 0
@@ -336,7 +336,8 @@ printKeyboard:
 	mov dl, 16
   int 10h
 	mov si, KEYBOARD_KEYS2
-	call printColorKeyboard
+  mov cx, 9
+	call print_kr
 
   mov ah, 02h  ; Setando o cursor
   mov bh, 0    ; Página 0
@@ -344,7 +345,8 @@ printKeyboard:
   mov dl, 17
   int 10h
   mov si, KEYBOARD_KEYS3
-  call printColorKeyboard
+  mov cx, 7
+  call print_kr
 
   .end:
   ret
@@ -454,7 +456,7 @@ randGen:
 
   ; Generate a random number between 0 and the total number of words
   xor edx, edx         ; Clear EDX to store the remainder
-  mov ecx, num_words
+  mov ecx, NUM_WORDS
   div ecx              ; Divide the seed (EAX) by the word count (ECX)
   mov eax, edx         ; Use the remainder (EDX) as the random number
   ret
@@ -464,7 +466,7 @@ setSecretWord:
   call randGen
 
   ; Find the address of the randomly chosen word
-  mov esi, words       ; Load the address of the array into esi
+  mov esi, WORDS       ; Load the address of the array into esi
   mov ecx, 6
   mul ecx              ; Multiply the random number by 6 (the size of each word)
   add esi, eax         ; esi = words + (random number * 6)
@@ -478,41 +480,41 @@ setSecretWord:
 ;================================================ TENATIVAS ================================================
 ;-------------------------- CALCULA A COORDENADA DO CARACTERE
 calcCharCoord:
-  cmp byte[numTries], 0
+  cmp byte[NUM_TRIES], 0
   je .firstTry
-  cmp byte[numTries], 1
+  cmp byte[NUM_TRIES], 1
   je .secondTry
-  cmp byte[numTries], 2
+  cmp byte[NUM_TRIES], 2
   je .thirdTry
-  cmp byte[numTries], 3
+  cmp byte[NUM_TRIES], 3
   je .fourthTry
-  cmp byte[numTries], 4
+  cmp byte[NUM_TRIES], 4
   je .fifthTry
-  cmp byte[numTries], 5
+  cmp byte[NUM_TRIES], 5
   je .sixthTry
 
   .firstTry:
-    mov byte[charCoord], 2
+    mov byte[CHAR_COORD], 2
     jmp .end
   
   .secondTry:
-    mov byte[charCoord], 5
+    mov byte[CHAR_COORD], 5
     jmp .end
 
   .thirdTry:
-    mov byte[charCoord], 8
+    mov byte[CHAR_COORD], 8
     jmp .end
   
   .fourthTry:
-    mov byte[charCoord], 11
+    mov byte[CHAR_COORD], 11
     jmp .end
   
   .fifthTry:
-    mov byte[charCoord], 14
+    mov byte[CHAR_COORD], 14
     jmp .end
 
   .sixthTry:
-    mov byte[charCoord], 17
+    mov byte[CHAR_COORD], 17
   
   .end:
     ret
@@ -525,30 +527,30 @@ playerTry:
 
   call calcCharCoord
 
-  getChar:
+  getchar:
     mov ah, 0x00
     int 16h
     cmp al, 0x08 ;backspace
     je .backspace
     cmp al, 0x61 ;a
-    jl getChar
+    jl getchar
     cmp al, 0x7a ;z
-    jg getChar
+    jg getchar
     stosb
-    printCharAtCoord [charCoord], dl, al, whiteColor
+    putcharAtCoord [CHAR_COORD], dl, al, whiteColor
     add dl, 3
-    loop getChar
+    loop getchar
     jmp .end
 
   .backspace:
     cmp dl, 14     ; Se for o primeiro caractere, não faz nada
-    je getChar
+    je getchar
     sub dl, 3        ; Decrementa o valor de dl para sobrescrever o caractere anterior
     mov al, ' '
-    printCharAtCoord [charCoord], dl, al, whiteColor
+    putcharAtCoord [CHAR_COORD], dl, al, whiteColor
     inc ecx       ; Incrementa o valor de ecx para não contabilizar o caractere apagado
     dec edi       ; Decrementa o valor de edi para sobrescrever o caractere anterior
-    jmp getChar
+    jmp getchar
   
   .end:
     mov ah, 0x00
@@ -601,7 +603,7 @@ checkChar:
   jne .doesNotExist1
 
   .exists1:
-    cmp byte [correct1], 1
+    cmp byte [CORRECT_1], 1
     je .doesNotExist1
     mov ax, 2
     ret
@@ -614,7 +616,7 @@ checkChar:
     jne .doesNotExist2
 
   .exists2:
-    cmp byte [correct2], 1
+    cmp byte [CORRECT_2], 1
     je .doesNotExist2
     mov ax, 2
     ret
@@ -627,7 +629,7 @@ checkChar:
     jne .doesNotExist3
 
   .exists3:
-    cmp byte [correct3], 1
+    cmp byte [CORRECT_3], 1
     je .doesNotExist3
     mov ax, 2
     ret
@@ -640,7 +642,7 @@ checkChar:
     jne .doesNotExist4
 
   .exists4:
-    cmp byte [correct4], 1
+    cmp byte [CORRECT_4], 1
     je .doesNotExist4
     mov ax, 2
     ret
@@ -653,7 +655,7 @@ checkChar:
     jne .end
 
   .exists5:
-    cmp byte [correct5], 1
+    cmp byte [CORRECT_5], 1
     je .end
     mov ax, 2
     ret
@@ -674,11 +676,11 @@ setCorrectLetters:
     jne .callWrongChar1
 
     .callRightChar1:
-      mov byte [correct1], 1
+      mov byte [CORRECT_1], 1
       jmp .char2
 
     .callWrongChar1:
-      mov byte [correct1], 0
+      mov byte [CORRECT_1], 0
 
   .char2:
     mov esi, CURRENT_TRY + 1
@@ -690,11 +692,11 @@ setCorrectLetters:
     jne .callWrongChar2
 
     .callRightChar2:
-      mov byte [correct2], 1
+      mov byte [CORRECT_2], 1
       jmp .char3
 
     .callWrongChar2:
-      mov byte [correct2], 0
+      mov byte [CORRECT_2], 0
 
   .char3:
     mov esi, CURRENT_TRY + 2
@@ -706,11 +708,11 @@ setCorrectLetters:
     jne .callWrongChar3
 
     .callRightChar3:
-      mov byte [correct3], 1
+      mov byte [CORRECT_3], 1
       jmp .char4
     
     .callWrongChar3:
-      mov byte [correct3], 0
+      mov byte [CORRECT_3], 0
 
   .char4:
     mov esi, CURRENT_TRY + 3
@@ -722,11 +724,11 @@ setCorrectLetters:
     jne .callWrongChar4
 
     .callRightChar4:
-      mov byte [correct4], 1
+      mov byte [CORRECT_4], 1
       jmp .char5
     
     .callWrongChar4:
-      mov byte [correct4], 0
+      mov byte [CORRECT_4], 0
 
   .char5:
     mov esi, CURRENT_TRY + 4
@@ -738,11 +740,11 @@ setCorrectLetters:
     jne .callWrongChar5
 
     .callRightChar5:
-      mov byte [correct5], 1
+      mov byte [CORRECT_5], 1
       jmp .end
     
     .callWrongChar5:
-      mov byte [correct5], 0
+      mov byte [CORRECT_5], 0
 
   .end:
   ret
@@ -755,7 +757,7 @@ checkWord:
   
   .char1:
     lodsb            ; Carrega o caractere da tentativa atual em al e incrementa esi
-    cmp byte [correct1], 1
+    cmp byte [CORRECT_1], 1
     je .callRightChar1
     jne .callWrongChar1
 
@@ -780,7 +782,7 @@ checkWord:
   .char2:
     mov esi, CURRENT_TRY + 1
     lodsb
-    cmp byte [correct2], 1
+    cmp byte [CORRECT_2], 1
     je .callRightChar2
     jne .callWrongChar2
 
@@ -805,7 +807,7 @@ checkWord:
   .char3:
     mov esi, CURRENT_TRY + 2
     lodsb
-    cmp byte [correct3], 1
+    cmp byte [CORRECT_3], 1
     je .callRightChar3
     jne .callWrongChar3
 
@@ -830,7 +832,7 @@ checkWord:
   .char4:
     mov esi, CURRENT_TRY + 3
     lodsb
-    cmp byte [correct4], 1
+    cmp byte [CORRECT_4], 1
     je .callRightChar4
     jne .callWrongChar4
 
@@ -855,7 +857,7 @@ checkWord:
   .char5:
     mov esi, CURRENT_TRY + 4
     lodsb
-    cmp byte [correct5], 1
+    cmp byte [CORRECT_5], 1
     je .callRightChar5
     jne .callWrongChar5
 
@@ -883,77 +885,77 @@ checkWord:
     mov dl, 14
     .printCurrentTry:
       lodsb
-      printCharAtCoord [charCoord], dl, al, whiteColor
+      putcharAtCoord [CHAR_COORD], dl, al, whiteColor
       add dl, 3
       loop .printCurrentTry
     ret
 
 ;-------------------------- INCREMENTA O NÚMERO DE TENTATIVAS
 incTries:
-  mov al, [numTries]
+  mov al, [NUM_TRIES]
   inc al
-  mov [numTries], al
+  mov [NUM_TRIES], al
   ret
 
 ;-------------------------- INICIALIZA O NÚMERO DE TENTATIVAS
 initTries:
-  mov byte [numTries], 0
-  mov byte [charCoord], 0
+  mov byte [NUM_TRIES], 0
+  mov byte [CHAR_COORD], 0
   ret
 
 ;-------------------------- ATUALIZA A TELA COM A TENTATIVA ATUAL
 updateGame:
-  cmp byte [numTries], 0
+  cmp byte [NUM_TRIES], 0
   je .firstLine
 
-  cmp byte [numTries], 1
+  cmp byte [NUM_TRIES], 1
   je .secondLine
 
-  cmp byte [numTries], 2
+  cmp byte [NUM_TRIES], 2
   je .thirdLine
 
-  cmp byte [numTries], 3
+  cmp byte [NUM_TRIES], 3
   je .fourthLine
 
-  cmp byte [numTries], 4
+  cmp byte [NUM_TRIES], 4
   je .fifthLine
 
-  cmp byte [numTries], 5
+  cmp byte [NUM_TRIES], 5
   je .sixthLine
 
   .firstLine:
-    mov cx, 110 ; Posição x inicial da primeira linha
-    mov dx, 10  ; Posição y inicial da primeira linha
+    mov cx, ROW_X
+    mov dx, ROW_Y_1
     call checkWord
     jmp .end
 
   .secondLine:
-    mov cx, 110 ; Posição x inicial da segunda linha
-    mov dx, 34  ; Posição y inicial da segunda linha
+    mov cx, ROW_X
+    mov dx, ROW_Y_2
     call checkWord
     jmp .end
 
   .thirdLine:
-    mov cx, 110 ; Posição x inicial da terceira linha
-    mov dx, 58  ; Posição y inicial da terceira linha
+    mov cx, ROW_X
+    mov dx, ROW_Y_3
     call checkWord
     jmp .end
   
   .fourthLine:
-    mov cx, 110 ; Posição x inicial da quarta linha
-    mov dx, 82  ; Posição y inicial da quarta linha
+    mov cx, ROW_X
+    mov dx, ROW_Y_4
     call checkWord
     jmp .end
 
   .fifthLine:
-    mov cx, 110 ; Posição x inicial da quinta linha
-    mov dx, 106 ; Posição y inicial da quinta linha
+    mov cx, ROW_X
+    mov dx, ROW_Y_5
     call checkWord
     jmp .end
 
   .sixthLine:
-    mov cx, 110 ; Posição x inicial da sexta linha
-    mov dx, 130 ; Posição y inicial da sexta linha
+    mov cx, ROW_X
+    mov dx, ROW_Y_6
     call checkWord
     jmp .end
 
@@ -963,34 +965,34 @@ updateGame:
 ;================================================ CHECA SE GANHOU ================================================
 ;-------------------------- CHECA SE O JOGADOR GANHOU
 checkWin:
-  cmp byte [correct1], 1
+  cmp byte [CORRECT_1], 1
   je .checkWin1
   jmp .endCheckWin
 
   .checkWin1:
-    cmp byte [correct2], 1
+    cmp byte [CORRECT_2], 1
     je .checkWin2
     jmp .endCheckWin
   
   .checkWin2:
-    cmp byte [correct3], 1
+    cmp byte [CORRECT_3], 1
     je .checkWin3
     jmp .endCheckWin
 
   .checkWin3:
-    cmp byte [correct4], 1
+    cmp byte [CORRECT_4], 1
     je .checkWin4
     jmp .endCheckWin
 
   .checkWin4:
-    cmp byte [correct5], 1
+    cmp byte [CORRECT_5], 1
     je .playerWin
     jmp .endCheckWin
 
   .playerWin:
     call clearScreen
-    printGameEnd 0, 0, WINNER_MESSAGE
-    printText 3, 17, SECRET_WORD, lightGreenColor
+    printEnd 0, 0, WINNER_MESSAGE
+    printString 3, 17, SECRET_WORD, lightGreenColor
     call waitEnter
     call main
 

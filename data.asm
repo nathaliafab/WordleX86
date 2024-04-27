@@ -81,19 +81,28 @@ SECTION .data
   KEYBOARD_KEYS1: db 'qwertyuiop',0
   KEYBOARD_KEYS2: db 'asdfghjkl',0
   KEYBOARD_KEYS3: db 'zxcvbnm',0
-  
+
   ;0: não pressionada
   ;1: pressionada e vermelho (incorreta)
   ;2: pressionada e amarelo (correta, posição errada)
   ;3: pressionada e verde (correta, posição correta)
-  keyboard_status: db '00000000000000000000000000',0
-  numTries: db 0
-  charCoord: db 0
+  KEYBOARD_STATUS: db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+  ROW_X equ 110
+  ROW_Y_1 equ 10
+  ROW_Y_2 equ 34
+  ROW_Y_3 equ 58
+  ROW_Y_4 equ 82
+  ROW_Y_5 equ 106
+  ROW_Y_6 equ 130
+  
+  NUM_TRIES: db 0
+  CHAR_COORD: db 0
   
   ; 0 -> letra errada
   ; 1 -> letra certa, posição certa
-  correct1: db 0
-  correct2: db 0
-  correct3: db 0
-  correct4: db 0
-  correct5: db 0
+  CORRECT_1: db 0
+  CORRECT_2: db 0
+  CORRECT_3: db 0
+  CORRECT_4: db 0
+  CORRECT_5: db 0

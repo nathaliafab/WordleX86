@@ -34,7 +34,7 @@ main:
   call cleanRegs
   call clearScreen
   call initVideo
-  printGameTitle 0, 0, GAME_TITLE
+  printTitle 0, 0, GAME_TITLE
   call waitEnter
   call initGame
   call gameLoop
@@ -48,12 +48,12 @@ initGame:
   call initTries
   call setSecretWord
   call printKeyboard
-  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 110, 10
-  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 110, 34
-  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 110, 58
-  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 110, 82
-  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 110, 106
-  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 110, 130
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, ROW_X, ROW_Y_1
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, ROW_X, ROW_Y_2
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, ROW_X, ROW_Y_3
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, ROW_X, ROW_Y_4
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, ROW_X, ROW_Y_5
+  drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, ROW_X, ROW_Y_6
   ret
 
 ;------------------------- JOGO RODANDO
@@ -63,7 +63,7 @@ gameLoop:
   call checkWin
 
   call incTries
-  mov cl, [numTries]
+  mov cl, [NUM_TRIES]
   cmp cl, 6
   jge .endGameLoop
   jmp gameLoop
@@ -75,8 +75,8 @@ gameLoop:
 endGame:
   call cleanRegs
   call clearScreen
-  printGameEnd 0, 0, LOSER_MESSAGE
-  printText 3, 17, SECRET_WORD, lightGreenColor
+  printEnd 0, 0, LOSER_MESSAGE
+  printString 3, 17, SECRET_WORD, lightGreenColor
   call waitEnter
   call main
   ret
