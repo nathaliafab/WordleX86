@@ -79,6 +79,7 @@ SECTION .data
                   db   0 ; end of string
 
   numTries: db 0
+  charCoord: db 0
   
   ; 0 -> letra errada
   ; 1 -> letra certa, posição certa
