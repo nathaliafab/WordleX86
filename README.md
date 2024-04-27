@@ -12,15 +12,16 @@ Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomand
   - [x] Menu inicial
   - [x] Errou a palavra
   - [x] Acertou a palavra
-- [ ] **Quadrados**
+- [x] **Quadrados**
   - [x] Desenhar quadrado na tela na cor desejada (verde)
   - [x] Desenhar quadrado na tela na cor desejada (vermelho)
   - [x] Desenhar quadrado na tela na cor desejada (amarelo)
   - [x] Desenhar quadrado específico no local correto
-  - [ ] Colocar as letras nos respectivos quadrados ([issue #7](https://github.com/nathaliafab/WordleX86/issues/7))
+  - [x] Colocar as letras nos respectivos quadrados
 - [ ] **Palavras**
   - [x] Pegar tentativa do usuário
   - [x] Checar se a tentativa é correta ou não
+  - [ ] Mostrar alfabeto e atualizar letras já usadas ([issue #11](https://github.com/nathaliafab/WordleX86/issues/11))
   - [x] Criar/Importar um dataset de palavras para o jogo
     - [x] Escolher aleatoriamente uma dessas palavras para cada rodada
   - [ ] Expandir para Dordle
@@ -49,9 +50,8 @@ Para jogar, siga os passos abaixo:
 
 ### 📜 Instruções
 Basta pressionar **Enter** para iniciar o jogo.
-O jogo apresentará uma palavra aleatória, e o jogador terá que tentar adivinhar a palavra em até cinco tentativas. Para isso, o jogador deve digitar uma palavra de cinco letras e pressionar **Enter**. O jogo irá informar quais letras da palavra escolhida estão corretas e quais estão incorretas. O jogador deve continuar tentando até acertar a palavra completa ou atingir o limite de tentativas.
+O jogo apresentará uma palavra aleatória, e o jogador terá que tentar adivinhar a palavra em até seis tentativas. Para isso, o jogador deve digitar uma palavra de cinco letras e pressionar **Enter**. O jogo irá informar quais letras da palavra escolhida estão corretas e quais estão incorretas. O jogador deve continuar tentando até acertar a palavra completa ou atingir o limite de tentativas.
 
-- Após cada jogada, o jogo irá informar quantas tentativas restantes o jogador possui.
 - Caso o jogador acerte a palavra antes do limite de tentativas, o jogo irá parabenizá-lo e perguntar se ele deseja jogar novamente.
 - Caso contrário, o jogo informará a palavra correta e perguntará se o jogador deseja jogar novamente.
 
