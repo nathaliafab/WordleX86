@@ -47,6 +47,7 @@ initGame:
   call clearScreen
   call initTries
   call setSecretWord
+  call printKeyboard
   drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 110, 10
   drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 110, 34
   drawFiveSquares lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, lightGrayColor, 110, 58

@@ -16,8 +16,8 @@
 	mov dh, %1   ; Linha (x)
 	mov dl, %2   ; Coluna (y)
 	int 10h
-	mov si, %3
-	mov bx, %4
+	mov si, %3  ; String
+	mov bx, %4  ; Cor
 	call printColorText
 %endmacro
 
@@ -49,12 +49,48 @@ printChar:
 
 ;------------------------- PRINTA STRING COM COR ESPECIFICADA EM BX
 printColorText:
-	loop_print_string:
+	.loop_print_string:
 		lodsb
 		test al, al ; verifica se chegou no fim da string
 		jz .end_print_string
 		call printChar
-		jmp loop_print_string
+		jmp .loop_print_string
+	.end_print_string:
+  ret
+
+;------------------------- PRINTA KEYBOARD EMBAIXO
+printColorKeyboard:
+  mov di, keyboard_status
+  cmp byte [di], 0
+  je .setColorNotPressed
+  cmp byte [di], 1
+  je .setColorIncorrect
+  cmp byte [di], 2
+  je .setColorMisplaced
+  cmp byte [di], 3
+  je .setColorCorrect
+
+  .setColorNotPressed:
+    mov bx, darkGrayColor
+    jmp .loop_print_string
+  
+  .setColorIncorrect:
+    mov bx, lightRedColor
+    jmp .loop_print_string
+  
+  .setColorMisplaced:
+    mov bx, yellowColor
+    jmp .loop_print_string
+  
+  .setColorCorrect:
+    mov bx, lightGreenColor
+  
+	.loop_print_string:
+		lodsb
+		test al, al ; verifica se chegou no fim da string
+		jz .end_print_string
+		call printChar
+		jmp .loop_print_string
 	.end_print_string:
   ret
 
@@ -282,6 +318,35 @@ printColorEnd:
 		jmp .change_color
 
 	.end_print:
+  ret
+
+;------------------------- PRINTA KEYBOARD EMBAIXO
+printKeyboard:
+  mov ah, 02h  ; Setando o cursor
+	mov bh, 0    ; Página 0
+	mov dh, 20
+	mov dl, 15
+	int 10h
+	mov si, KEYBOARD_KEYS1
+	call printColorKeyboard
+
+  mov ah, 02h  ; Setando o cursor
+	mov bh, 0    ; Página 0
+	mov dh, 21
+	mov dl, 16
+  int 10h
+	mov si, KEYBOARD_KEYS2
+	call printColorKeyboard
+
+  mov ah, 02h  ; Setando o cursor
+  mov bh, 0    ; Página 0
+  mov dh, 22
+  mov dl, 17
+  int 10h
+  mov si, KEYBOARD_KEYS3
+  call printColorKeyboard
+
+  .end:
   ret
 
 ;================================================ QUADRADOS ================================================
