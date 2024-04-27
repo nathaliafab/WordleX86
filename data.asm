@@ -78,7 +78,17 @@ SECTION .data
                   db   '                                       ',0ah,0dh
                   db   0 ; end of string
 
+  KEYBOARD_KEYS1: db 'qwertyuiop',0
+  KEYBOARD_KEYS2: db 'asdfghjkl',0
+  KEYBOARD_KEYS3: db 'zxcvbnm',0
+  
+  ;0: não pressionada
+  ;1: pressionada e vermelho (incorreta)
+  ;2: pressionada e amarelo (correta, posição errada)
+  ;3: pressionada e verde (correta, posição correta)
+  keyboard_status: db '00000000000000000000000000',0
   numTries: db 0
+  charCoord: db 0
   
   ; 0 -> letra errada
   ; 1 -> letra certa, posição certa
