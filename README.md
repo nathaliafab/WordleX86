@@ -7,26 +7,6 @@
 
 Este é um jogo de Wordle feito em assembly x86. O código foi refatorado tomando como base a ideia para o meu [projeto bootloader](https://github.com/saranicoly/bootloader-asm) da cadeira Infraestrutura de Software (IF677) no CIn-UFPE.
 
-### 🔨 To do...
-- [x] **Telas do jogo**
-  - [x] Menu inicial
-  - [x] Errou a palavra
-  - [x] Acertou a palavra
-- [x] **Quadrados**
-  - [x] Desenhar quadrado na tela na cor desejada (verde)
-  - [x] Desenhar quadrado na tela na cor desejada (vermelho)
-  - [x] Desenhar quadrado na tela na cor desejada (amarelo)
-  - [x] Desenhar quadrado específico no local correto
-  - [x] Colocar as letras nos respectivos quadrados
-- [ ] **Palavras**
-  - [x] Pegar tentativa do usuário
-  - [x] Checar se a tentativa é correta ou não
-  - [ ] Mostrar alfabeto e atualizar letras já usadas ([issue #11](https://github.com/nathaliafab/WordleX86/issues/11))
-  - [x] Criar/Importar um dataset de palavras para o jogo
-    - [x] Escolher aleatoriamente uma dessas palavras para cada rodada
-  - [ ] Expandir para Dordle
-  - [ ] Expandir para Quordle
-
 ## Como jogar
 ### Pré-requisitos
 Antes de começar a jogar, certifique-se de ter instalado os seguintes programas:
@@ -49,22 +29,23 @@ Para jogar, siga os passos abaixo:
 3. Compile e rode o código com o comando `make`.
 
 ### 📜 Instruções
-Basta pressionar **Enter** para iniciar o jogo.
-O jogo apresentará uma palavra aleatória, e o jogador terá que tentar adivinhar a palavra em até seis tentativas. Para isso, o jogador deve digitar uma palavra de cinco letras e pressionar **Enter**. O jogo irá informar quais letras da palavra escolhida estão corretas e quais estão incorretas. O jogador deve continuar tentando até acertar a palavra completa ou atingir o limite de tentativas.
-
-- Caso o jogador acerte a palavra antes do limite de tentativas, o jogo irá parabenizá-lo e perguntar se ele deseja jogar novamente.
-- Caso contrário, o jogo informará a palavra correta e perguntará se o jogador deseja jogar novamente.
+- Pressione **Enter** para iniciar o jogo.
+- Uma palavra será escolhida aleatoriamente do arquivo [words.asm](words.asm).
+- Digite uma palavra de cinco letras e pressione **Enter**.
+- O jogo indicará quais letras estão corretas ou incorretas na palavra que você escolheu.
+- Continue tentando até adivinhar a palavra ou usar todas as seis tentativas disponíveis.
+- Ao final, a palavra correta será revelada. Para jogar novamente, pressione **Enter**.
 
 ## 📷 Screenshots
 
 | Menu inicial                    | Tentativa do jogador              |
 |:----------------------------:|:---------------------------------:|
 | ![](/screenshots/menu_title.png) | ![](/screenshots/try.png) |
-| Acertou a palavra               | Errou a palavra                 |
+| **Acertou a palavra**               | **Errou a palavra**                 |
 | ![](/screenshots/you_win.png) | ![](/screenshots/you_lose.png) |
 
 ## 🦝 Contribuições
 Contribuições são sempre bem-vindas! Se você encontrar um bug ou tiver uma ideia para uma melhoria no jogo, por favor, abra uma issue ou envie um pull request.
 
 ## Licença
-Este projeto está sob a licença MIT. Consulte o arquivo para obter mais informações.
+Este projeto está sob a licença MIT. [Consulte o arquivo para obter mais informações](LICENSE).
