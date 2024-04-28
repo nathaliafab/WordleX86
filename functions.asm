@@ -11,14 +11,14 @@
 %endmacro
 
 %macro printString 4
-	mov ah, 02h  ; Setando o cursor
-	mov bh, 0    ; Página 0
-	mov dh, %1   ; Linha (x)
-	mov dl, %2   ; Coluna (y)
-	int 10h
-	mov si, %3  ; String
-	mov bx, %4  ; Cor
-	call print_string
+  mov ah, 02h  ; Setando o cursor
+  mov bh, 0    ; Página 0
+  mov dh, %1   ; Linha (x)
+  mov dl, %2   ; Coluna (y)
+  int 10h
+  mov si, %3  ; String
+  mov bx, %4  ; Cor
+  call print_string
 %endmacro
 
 %macro printTitle 3
@@ -322,22 +322,22 @@ printKeyboard:
   mov di, KEYBOARD_STATUS
   
   mov ah, 02h  ; Setando o cursor
-	mov bh, 0    ; Página 0
-	mov dh, 20
-	mov dl, 15
-	int 10h
-	mov si, KEYBOARD_KEYS1
+  mov bh, 0    ; Página 0
+  mov dh, 20
+  mov dl, 15
+  int 10h
+  mov si, KEYBOARD_KEYS1
   mov cx, 10
-	call print_kr
+  call print_kr
 
   mov ah, 02h  ; Setando o cursor
-	mov bh, 0    ; Página 0
-	mov dh, 21
-	mov dl, 16
+  mov bh, 0    ; Página 0
+  mov dh, 21
+  mov dl, 16
   int 10h
-	mov si, KEYBOARD_KEYS2
+  mov si, KEYBOARD_KEYS2
   mov cx, 9
-	call print_kr
+  call print_kr
 
   mov ah, 02h  ; Setando o cursor
   mov bh, 0    ; Página 0
@@ -568,30 +568,21 @@ playerTry:
 greenSquare:
   mov ax, lightGreenColor
   mov ah, 0x0c
-  drawSquare ax, cx, dx, 15
-  add bx, 23
-  sub dx, 15    ; restaura o valor de dx
-  mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
+  call draw_next_sq
   ret
 
 ;-------------------------- DESENHA QUADRADO VERMELHO NO LOCAL INDICADO
 redSquare:
   mov ax, lightRedColor
   mov ah, 0x0c
-  drawSquare ax, cx, dx, 15
-  add bx, 23
-  sub dx, 15    ; restaura o valor de dx
-  mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
+  call draw_next_sq
   ret
 
 ;-------------------------- DESENHA QUADRADO AMARELO NO LOCAL INDICADO
 yellowSquare:
   mov ax, yellowColor
   mov ah, 0x0c
-  drawSquare ax, cx, dx, 15
-  add bx, 23
-  sub dx, 15    ; restaura o valor de dx
-  mov cx, bx    ; incrementa o valor de cx para o próximo quadrado
+  call draw_next_sq
   ret
 
 ;-------------------------- CHECA SE LETRA ESTÁ NA PALAVRA SECRETA
