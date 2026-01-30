@@ -36,14 +36,14 @@ Você pode rodar o jogo utilizando **Docker** (sem instalar dependências no seu
 
 **Script**
 
-Você pode executar o jogo com o script bash `run_wordle.sh`, que roda os comandos descritos na seção anterior.
+Você pode executar o jogo com o script bash [`run_wordle.sh`](run_wordle.sh), que roda os comandos descritos na seção anterior.
 
-1. **Torne o script executável (apenas da primeira vez)**
+1. **Torne o script executável (apenas da primeira vez):**
     ```bash
     chmod +x run_wordle.sh
     ```
 
-2. **Execute com o comando abaixo, ou clique no script no explorador de arquivos**
+2. **Execute com o comando abaixo, ou clique no script no explorador de arquivos:**
     ```bash
     ./run_wordle.sh
     ```
