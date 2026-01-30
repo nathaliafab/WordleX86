@@ -446,35 +446,63 @@ clearScreen:
   int 10h
   ret
 
+;------------------------- RESETA DADOS DA MEMÓRIA PARA NOVO JOGO
+resetGameData:
+  push di
+  push cx
+  push ax
+
+  ; 1. Limpa o array de status do teclado (enche de 0)
+  mov di, KEYBOARD_STATUS
+  mov cx, 26            ; 26 letras no alfabeto
+  xor al, al            ; al = 0
+  rep stosb             ; repete 'mov [di], al' cx vezes
+
+  ; 2. Limpa as flags de acerto (para não começar ganhando)
+  mov byte [CORRECT_1], 0
+  mov byte [CORRECT_2], 0
+  mov byte [CORRECT_3], 0
+  mov byte [CORRECT_4], 0
+  mov byte [CORRECT_5], 0
+
+  ; 3. Limpa a palavra secreta antiga
+  mov di, SECRET_WORD
+  mov cx, 6
+  xor al, al
+  rep stosb
+
+  pop ax
+  pop cx
+  pop di
+  ret
+
 ;================================================ PALAVRA SECRETA ================================================
 ;-------------------------- RANDOMIZA A PALAVRA SECRETA
 randGen:
-  ; Generate a pseudo-random number using the TSC as seed
-  rdtsc                ; Read the TSC into EDX:EAX
-  add eax, edx         ; Add the high and low parts of TSC
-  mov ebx, eax         ; Use the TSC value as the seed for the random number
-
-  ; Generate a random number between 0 and the total number of words
-  xor edx, edx         ; Clear EDX to store the remainder
-  mov ecx, NUM_WORDS
-  div ecx              ; Divide the seed (EAX) by the word count (ECX)
-  mov eax, edx         ; Use the remainder (EDX) as the random number
+  rdtsc               ; Lê o contador de tempo do processador em EDX:EAX
+  xor edx, edx        ; Limpa EDX para preparar para a divisão (EDX:EAX / ECX)
+  mov ecx, NUM_WORDS  ; ECX = Número total de palavras
+  div ecx              ; Divide EDX:EAX por ECX. O resto fica em EDX
+  mov eax, edx         ; O resto da divisão é nosso número aleatório
   ret
 
 ;-------------------------- SETA A PALAVRA SECRETA
 setSecretWord:
   call randGen
 
-  ; Find the address of the randomly chosen word
-  mov esi, WORDS       ; Load the address of the array into esi
-  mov ecx, 6
-  mul ecx              ; Multiply the random number by 6 (the size of each word)
-  add esi, eax         ; esi = words + (random number * 6)
+  mov cx, 6
+  mul cx             ; Multiplica AX por 6. Resultado (offset) fica em AX.
+                     ; (Cada palavra tem 5 letras + 1 null terminator = 6 bytes)
 
-  mov edi, SECRET_WORD
-  mov ecx, 6
-  cld
-  rep movsb ; Copia os caracteres da palavra selecionada para SECRET_WORD
+  mov si, WORDS      ; Carrega o endereço base da lista de palavras em SI
+  add si, ax         ; Soma o offset calculado (Index * 6)
+                     ; Agora SI aponta exatamente para a palavra sorteada
+
+  mov di, SECRET_WORD ; DI aponta para onde vamos copiar a palavra
+  
+  mov cx, 6           ; Vamos copiar 6 bytes
+  cld                 ; Garante que a cópia vá para frente
+  rep movsb           ; Copia byte a byte de [SI] para [DI]
   ret
 
 ;================================================ TENATIVAS ================================================
@@ -564,22 +592,107 @@ playerTry:
     stosb
   ret
 
-;-------------------------- DESENHA QUADRADO VERDE NO LOCAL INDICADO
+;-------------------------- ATUALIZA STATUS DO TECLADO
+; Input: AL = caractere, BL = novo status
+updateKeyStatus:
+  push ax
+  push bx
+  push cx
+  push dx     ; <--- Salva Y
+  push di
+  push si
+  
+  ; Vamos usar o segmento DS padrão, mas forçamos a direção forward
+  cld 
+
+  mov dl, al  ; Salva a letra alvo em DL
+
+  ; --- Varre Linha 1 (QWERTY) ---
+  mov si, KEYBOARD_KEYS1
+  mov di, KEYBOARD_STATUS 
+  .scan1:
+    lodsb           
+    cmp al, 0       
+    je .check_row2
+    cmp al, dl      
+    je .found
+    inc di          
+    jmp .scan1
+
+    ; --- Varre Linha 2 (ASDFG) ---
+  .check_row2:
+    mov si, KEYBOARD_KEYS2
+  .scan2:
+    lodsb
+    cmp al, 0
+    je .check_row3
+    cmp al, dl
+    je .found
+    inc di
+    jmp .scan2
+
+    ; --- Varre Linha 3 (ZXCV) ---
+  .check_row3:
+    mov si, KEYBOARD_KEYS3
+  .scan3:
+    lodsb
+    cmp al, 0
+    je .not_found 
+    cmp al, dl
+    je .found
+    inc di
+    jmp .scan3
+
+  .found:
+    mov al, [di]  ; Pega status atual
+    
+    cmp al, 3              ; Se já é verde...
+    je .not_found          ; Sai
+    
+    cmp bl, 3              ; Novo é verde?
+    je .force_update       ; Atualiza
+    
+    cmp al, 2              ; Se já é amarelo...
+    je .not_found          ; Sai
+
+  .force_update:
+    mov [di], bl
+
+  .not_found:
+    pop si
+    pop di
+    pop dx     ; <--- Restaura Y
+    pop cx
+    pop bx
+    pop ax
+    ret
+
+;-------------------------- DESENHA QUADRADOS
 greenSquare:
+  push ax
+  mov bl, 3
+  call updateKeyStatus
+  pop ax
   mov ax, lightGreenColor
   mov ah, 0x0c
   call draw_next_sq
   ret
 
-;-------------------------- DESENHA QUADRADO VERMELHO NO LOCAL INDICADO
 redSquare:
+  push ax
+  mov bl, 1
+  call updateKeyStatus
+  pop ax
   mov ax, lightRedColor
   mov ah, 0x0c
   call draw_next_sq
   ret
 
-;-------------------------- DESENHA QUADRADO AMARELO NO LOCAL INDICADO
 yellowSquare:
+  push ax
+  mov bl, 2
+  call updateKeyStatus
+  pop ax
   mov ax, yellowColor
   mov ah, 0x0c
   call draw_next_sq
@@ -738,38 +851,43 @@ setCorrectLetters:
       mov byte [CORRECT_5], 0
 
   .end:
-  ret
+    ret
 
 ;-------------------------- CHECA LETRAS E DESENHA QUADRADOS DE ACORDO
 checkWord:
-  call setCorrectLetters ; Atribui 1 para as letras certas e 0 para as erradas
+  call setCorrectLetters 
   mov esi, CURRENT_TRY
   mov edi, SECRET_WORD
   
+  ; --- CHAR 1 ---
   .char1:
-    lodsb            ; Carrega o caractere da tentativa atual em al e incrementa esi
+    lodsb                       ; Carrega o caractere da tentativa atual em al e incrementa esi
     cmp byte [CORRECT_1], 1
     je .callRightChar1
     jne .callWrongChar1
 
     .callRightChar1:
+      mov al, [CURRENT_TRY]     ; Recarrega letra certa
       call greenSquare
       jmp .char2
 
     .callWrongChar1:
-      call checkChar ; já sei que é errado, então só preciso saber se é amarelo ou vermelho
+      call checkChar
       cmp ax, 2
       je .drawYellowSquare1
       jne .drawRedSquare1
 
       .drawYellowSquare1:
+        mov al, [CURRENT_TRY]   
         call yellowSquare
         jmp .char2
 
       .drawRedSquare1:
+        mov al, [CURRENT_TRY]   
         call redSquare
         jmp .char2
 
+  ; --- CHAR 2 ---
   .char2:
     mov esi, CURRENT_TRY + 1
     lodsb
@@ -778,6 +896,7 @@ checkWord:
     jne .callWrongChar2
 
     .callRightChar2:
+      mov al, [CURRENT_TRY + 1] 
       call greenSquare
       jmp .char3
         
@@ -788,13 +907,16 @@ checkWord:
       jne .drawRedSquare2
 
       .drawYellowSquare2:
+        mov al, [CURRENT_TRY + 1] 
         call yellowSquare
         jmp .char3
 
       .drawRedSquare2:
+        mov al, [CURRENT_TRY + 1] 
         call redSquare
         jmp .char3
 
+  ; --- CHAR 3 ---
   .char3:
     mov esi, CURRENT_TRY + 2
     lodsb
@@ -803,6 +925,7 @@ checkWord:
     jne .callWrongChar3
 
     .callRightChar3:
+      mov al, [CURRENT_TRY + 2] 
       call greenSquare
       jmp .char4
         
@@ -813,13 +936,16 @@ checkWord:
       jne .drawRedSquare3
 
       .drawYellowSquare3:
+        mov al, [CURRENT_TRY + 2] 
         call yellowSquare
         jmp .char4
       
       .drawRedSquare3:
+        mov al, [CURRENT_TRY + 2] 
         call redSquare
         jmp .char4
 
+  ; --- CHAR 4 ---
   .char4:
     mov esi, CURRENT_TRY + 3
     lodsb
@@ -828,6 +954,7 @@ checkWord:
     jne .callWrongChar4
 
     .callRightChar4:
+      mov al, [CURRENT_TRY + 3] 
       call greenSquare
       jmp .char5
 
@@ -838,13 +965,16 @@ checkWord:
       jne .drawRedSquare4
 
       .drawYellowSquare4:
+        mov al, [CURRENT_TRY + 3] 
         call yellowSquare
         jmp .char5
       
       .drawRedSquare4:
+        mov al, [CURRENT_TRY + 3] 
         call redSquare
         jmp .char5
 
+  ; --- CHAR 5 ---
   .char5:
     mov esi, CURRENT_TRY + 4
     lodsb
@@ -853,6 +983,7 @@ checkWord:
     jne .callWrongChar5
 
     .callRightChar5:
+      mov al, [CURRENT_TRY + 4] 
       call greenSquare
       jmp .end
 
@@ -863,10 +994,12 @@ checkWord:
       jne .drawRedSquare5
 
       .drawYellowSquare5:
+        mov al, [CURRENT_TRY + 4] 
         call yellowSquare
         jmp .end
       
       .drawRedSquare5:
+        mov al, [CURRENT_TRY + 4] 
         call redSquare
         jmp .end
 
@@ -951,6 +1084,7 @@ updateGame:
     jmp .end
 
   .end:
+    call printKeyboard
     ret
 
 ;================================================ CHECA SE GANHOU ================================================
@@ -985,7 +1119,7 @@ checkWin:
     printEnd 0, 0, WINNER_MESSAGE
     printString 3, 17, SECRET_WORD, lightGreenColor
     call waitEnter
-    call main
+    jmp main
 
   .endCheckWin:
   ret

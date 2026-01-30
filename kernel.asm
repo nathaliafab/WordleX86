@@ -44,6 +44,7 @@ main:
 ;------------------------- INICIALIZA O JOGO
 initGame:
   call cleanRegs
+  call resetGameData
   call clearScreen
   call initTries
   call setSecretWord
@@ -78,5 +79,4 @@ endGame:
   printEnd 0, 0, LOSER_MESSAGE
   printString 3, 17, SECRET_WORD, lightGreenColor
   call waitEnter
-  call main
-  ret
+  jmp main
