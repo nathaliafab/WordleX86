@@ -564,22 +564,34 @@ playerTry:
     stosb
   ret
 
-;-------------------------- DESENHA QUADRADO VERDE NO LOCAL INDICADO
+;-------------------------- DESENHA QUADRADO VERDE
 greenSquare:
+  push ax
+  mov bl, 3
+  call updateKeyStatus
+  pop ax
   mov ax, lightGreenColor
   mov ah, 0x0c
   call draw_next_sq
   ret
 
-;-------------------------- DESENHA QUADRADO VERMELHO NO LOCAL INDICADO
+;-------------------------- DESENHA QUADRADO VERMELHO
 redSquare:
+  push ax
+  mov bl, 1
+  call updateKeyStatus
+  pop ax
   mov ax, lightRedColor
   mov ah, 0x0c
   call draw_next_sq
   ret
 
-;-------------------------- DESENHA QUADRADO AMARELO NO LOCAL INDICADO
+;-------------------------- DESENHA QUADRADO AMARELO
 yellowSquare:
+  push ax
+  mov bl, 2
+  call updateKeyStatus
+  pop ax
   mov ax, yellowColor
   mov ah, 0x0c
   call draw_next_sq
@@ -738,38 +750,118 @@ setCorrectLetters:
       mov byte [CORRECT_5], 0
 
   .end:
-  ret
+    ret
+
+;------------------------- ATUALIZA STATUS DO TECLADO (QWERTY)
+; Input: AL = caractere (ex: 'a'), BL = novo status (1=red, 2=yellow, 3=green)
+updateKeyStatus:
+  push ax
+  push bx
+  push cx
+  push dx     ; Salva a coordenada Y
+  push di
+  push si
+  
+  mov dl, al  ; Salva a letra alvo em DL para comparação
+
+  ; --- Varre Linha 1 (QWERTY) ---
+  mov si, KEYBOARD_KEYS1
+  mov di, KEYBOARD_STATUS ; DI começa no índice 0
+  .scan1:
+    lodsb           ; Carrega letra da string
+    cmp al, 0       ; Fim da string?
+    je .check_row2
+    cmp al, dl      ; É a letra que queremos?
+    je .found
+    inc di          ; Se não, avança para o próximo slot de status
+    jmp .scan1
+
+    ; --- Varre Linha 2 (ASDFG) ---
+  .check_row2:
+    mov si, KEYBOARD_KEYS2
+  .scan2:
+    lodsb
+    cmp al, 0
+    je .check_row3
+    cmp al, dl
+    je .found
+    inc di
+    jmp .scan2
+
+    ; --- Varre Linha 3 (ZXCV) ---
+  .check_row3:
+    mov si, KEYBOARD_KEYS3
+  .scan3:
+    lodsb
+    cmp al, 0
+    je .not_found ; Letra não encontrada no teclado
+    cmp al, dl
+    je .found
+    inc di
+    jmp .scan3
+
+  .found:
+    ; DI aponta para o byte exato em KEYBOARD_STATUS correspondente à letra
+    mov al, [di]  ; Pega o status atual
+    
+    ; Lógica de Prioridade: Green(3) > Yellow(2) > Red(1)
+    cmp al, 3              ; Se já é verde...
+    je .end                ; ...não mexe mais.
+    
+    cmp bl, 3              ; Se o novo status é verde...
+    je .force_update       ; ...atualiza
+    
+    cmp al, 2              ; Se já é amarelo...
+    je .end                ; ...não deixe virar vermelho.
+
+  .force_update:
+    mov [di], bl
+
+  .not_found:
+  .end:
+    pop si
+    pop di
+    pop dx     ; Restaura a coordenada Y original
+    pop cx
+    pop bx
+    pop ax
+    ret
 
 ;-------------------------- CHECA LETRAS E DESENHA QUADRADOS DE ACORDO
 checkWord:
-  call setCorrectLetters ; Atribui 1 para as letras certas e 0 para as erradas
+  call setCorrectLetters 
   mov esi, CURRENT_TRY
   mov edi, SECRET_WORD
   
+  ; --- CHAR 1 ---
   .char1:
-    lodsb            ; Carrega o caractere da tentativa atual em al e incrementa esi
+    lodsb                       ; Carrega o caractere da tentativa atual em al e incrementa esi
     cmp byte [CORRECT_1], 1
     je .callRightChar1
     jne .callWrongChar1
 
     .callRightChar1:
+      mov al, [CURRENT_TRY]     ; Recarrega letra certa
       call greenSquare
       jmp .char2
 
     .callWrongChar1:
-      call checkChar ; já sei que é errado, então só preciso saber se é amarelo ou vermelho
+      call checkChar
       cmp ax, 2
       je .drawYellowSquare1
       jne .drawRedSquare1
 
       .drawYellowSquare1:
+        mov al, [CURRENT_TRY]   ; Recarrega letra certa
         call yellowSquare
         jmp .char2
 
       .drawRedSquare1:
+        mov al, [CURRENT_TRY]   ; Recarrega letra certa
         call redSquare
         jmp .char2
 
+  ; --- CHAR 2 ---
   .char2:
     mov esi, CURRENT_TRY + 1
     lodsb
@@ -778,6 +870,7 @@ checkWord:
     jne .callWrongChar2
 
     .callRightChar2:
+      mov al, [CURRENT_TRY + 1] ; Recarrega letra certa
       call greenSquare
       jmp .char3
         
@@ -788,13 +881,16 @@ checkWord:
       jne .drawRedSquare2
 
       .drawYellowSquare2:
+        mov al, [CURRENT_TRY + 1] ; Recarrega letra certa
         call yellowSquare
         jmp .char3
 
       .drawRedSquare2:
+        mov al, [CURRENT_TRY + 1] ; Recarrega letra certa
         call redSquare
         jmp .char3
 
+  ; --- CHAR 3 ---
   .char3:
     mov esi, CURRENT_TRY + 2
     lodsb
@@ -803,6 +899,7 @@ checkWord:
     jne .callWrongChar3
 
     .callRightChar3:
+      mov al, [CURRENT_TRY + 2] ; Recarrega letra certa
       call greenSquare
       jmp .char4
         
@@ -813,13 +910,16 @@ checkWord:
       jne .drawRedSquare3
 
       .drawYellowSquare3:
+        mov al, [CURRENT_TRY + 2] ; Recarrega letra certa
         call yellowSquare
         jmp .char4
       
       .drawRedSquare3:
+        mov al, [CURRENT_TRY + 2] ; Recarrega letra certa
         call redSquare
         jmp .char4
 
+  ; --- CHAR 4 ---
   .char4:
     mov esi, CURRENT_TRY + 3
     lodsb
@@ -828,6 +928,7 @@ checkWord:
     jne .callWrongChar4
 
     .callRightChar4:
+      mov al, [CURRENT_TRY + 3] ; Recarrega letra certa
       call greenSquare
       jmp .char5
 
@@ -838,13 +939,16 @@ checkWord:
       jne .drawRedSquare4
 
       .drawYellowSquare4:
+        mov al, [CURRENT_TRY + 3] ; Recarrega letra certa
         call yellowSquare
         jmp .char5
       
       .drawRedSquare4:
+        mov al, [CURRENT_TRY + 3] ; Recarrega letra certa
         call redSquare
         jmp .char5
 
+  ; --- CHAR 5 ---
   .char5:
     mov esi, CURRENT_TRY + 4
     lodsb
@@ -853,6 +957,7 @@ checkWord:
     jne .callWrongChar5
 
     .callRightChar5:
+      mov al, [CURRENT_TRY + 4] ; Recarrega letra certa
       call greenSquare
       jmp .end
 
@@ -863,10 +968,12 @@ checkWord:
       jne .drawRedSquare5
 
       .drawYellowSquare5:
+        mov al, [CURRENT_TRY + 4] ; Recarrega letra certa
         call yellowSquare
         jmp .end
       
       .drawRedSquare5:
+        mov al, [CURRENT_TRY + 4] ; Recarrega letra certa
         call redSquare
         jmp .end
 
@@ -951,6 +1058,7 @@ updateGame:
     jmp .end
 
   .end:
+    call printKeyboard
     ret
 
 ;================================================ CHECA SE GANHOU ================================================
