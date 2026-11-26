@@ -86,8 +86,5 @@ Antes de começar a jogar, certifique-se de ter instalado os seguintes programas
 | **Acertou a palavra**               | **Errou a palavra**                 |
 | ![](/screenshots/you_win.png) | ![](/screenshots/you_lose.png) |
 
-## 🦝 Contribuições
-Contribuições são sempre bem-vindas! Se você encontrar um bug ou tiver uma ideia para uma melhoria no jogo, por favor, abra uma issue ou envie um pull request.
-
 ## Licença
 Este projeto está sob a licença MIT. [Consulte o arquivo para obter mais informações](LICENSE).
