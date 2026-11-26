@@ -13,6 +13,8 @@ Você pode rodar o jogo utilizando **Docker** (sem instalar dependências no seu
 
 ### 🐳 Opção 1: Rodando com Docker (Linux/Ubuntu)
 
+**Manualmente**
+
 1. **Construa a imagem:**
     ```bash
     docker build -t wordle-asm .
@@ -30,6 +32,20 @@ Você pode rodar o jogo utilizando **Docker** (sem instalar dependências no seu
     -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     wordle-asm
+    ```
+
+**Script**
+
+Você pode executar o jogo com o script bash `run_wordle.sh`, que roda os comandos descritos na seção anterior.
+
+1. **Torne o script executável (apenas da primeira vez)**
+    ```bash
+    chmod +x run_wordle.sh
+    ```
+
+2. **Execute com o comando abaixo, ou clique no script no explorador de arquivos**
+    ```bash
+    ./run_wordle.sh
     ```
 
 ### 🛠️ Opção 2: Instalação Local
